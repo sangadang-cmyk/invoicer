@@ -1,10 +1,8 @@
 package tech.sangdang;
 
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
-import io.cucumber.spring.ScenarioScope;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
@@ -18,7 +16,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @TestConfiguration
-@PropertySource("classpath:application.yml")
 public class TestConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public LocalStackContainer localStackContainer() {
@@ -43,15 +40,13 @@ public class TestConfig {
 
     @Bean
     public DynamoDbClient dynamoDbClient(LocalStackContainer localStack) {
-        DynamoDbClient client = DynamoDbClient.builder()
+        return DynamoDbClient.builder()
                 .endpointOverride(localStack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB))
                 .region(Region.of(localStack.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(localStack.getAccessKey(), localStack.getSecretKey())
                 ))
                 .build();
-
-        return client;
     }
 
 

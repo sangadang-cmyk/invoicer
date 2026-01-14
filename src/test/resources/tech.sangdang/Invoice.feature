@@ -1,5 +1,4 @@
 Feature: Invoice
-
   Scenario Outline: Create invoice
     When I submit a new invoice with "<description>", "<userId>", <maxSizeInBytes>, and "<allowedTypes>"
     Then I should see the invoice created
