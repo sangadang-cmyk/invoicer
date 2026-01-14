@@ -66,8 +66,8 @@ jobs:
           echo "::group::Maven Build & Dockerize to image: $FULL_IMAGE_NAME"
           ./mvnw spring-boot:build-image \
             -ntp \
-            -Dspring-boot.build-image.imageName=$FULL_IMAGE_NAME
-            -Dskip=true
+            -Dspring-boot.build-image.imageName=$FULL_IMAGE_NAME \
+            -DskipTests=true
           echo "::endgroup::"
           docker push $FULL_IMAGE_NAME
           echo "image=$FULL_IMAGE_NAME" >> $GITHUB_OUTPUT
