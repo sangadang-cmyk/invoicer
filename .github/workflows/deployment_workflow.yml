@@ -1,0 +1,72 @@
+name: Deployment to Amazon ECS
+
+on:
+  push:
+    tags:
+      - 'dev-*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Verify AWS login
+        run: aws sts get-caller-identity
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+          FULL_IMAGE_NAME: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+        run: |
+          chmod +x ./mvnw
+          echo "::group::Maven Build & Dockerize to image: $FULL_IMAGE_NAME"
+          ./mvnw spring-boot:build-image \
+            -ntp \
+            -Dspring-boot.build-image.imageName=$FULL_IMAGE_NAME
+          echo "::endgroup::"
+          docker push $FULL_IMAGE_NAME
+          echo "image=$FULL_IMAGE_NAME" >> $GITHUB_OUTPUT
+
+#      - name: Fill in the new image ID in the AWS task definition
+#        id: task-def
+#        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+#        with:
+#          task-definition: task-definition.json
+#          container-name: Main
+#          image: ${{ steps.build-image.outputs.image }}
+#
+#      - name: Deploy AWS ECS with task definition
+#        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+#        with:
+#          task-definition: ${{ steps.task-def.outputs.task-definition }}
+#          service: todo-crud-57f3
+#          cluster: default-serverless
+#          wait-for-service-stability: true
