@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: invoicer
+  cloud:
+    aws:
+      region:
+        static: ap-southeast-1
+      dynamodb:
+        table-prefix: invoicer_
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+springdoc:
+  swagger-ui:
+    enabled: true
