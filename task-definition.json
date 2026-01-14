@@ -1,0 +1,39 @@
+{
+  "family": "invoicer-task-def",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::315326805283:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::315326805283:role/invoicer-taskRole",
+  "containerDefinitions": [
+    {
+      "name": "Main",
+      "image": "315326805283.dkr.ecr.ap-southeast-1.amazonaws.com/sang_dang/invoicer:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/todo-crud",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": [
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        }
+      ]
+    }
+  ]
+}
