@@ -5,8 +5,6 @@ spring:
     aws:
       region:
         static: ap-southeast-1
-      dynamodb:
-        table-prefix: invoicer_
 management:
   endpoints:
     web:
