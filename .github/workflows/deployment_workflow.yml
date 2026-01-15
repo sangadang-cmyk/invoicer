@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout
@@ -31,6 +32,7 @@ jobs:
     name: Upload Docker Image to ECR
     runs-on: ubuntu-latest
     environment: production
+    needs: test
 
     permissions:
       id-token: write
@@ -75,9 +77,6 @@ jobs:
           echo "::endgroup::"
           docker push $FULL_IMAGE_NAME
           echo "image=$FULL_IMAGE_NAME" >> "$GITHUB_OUTPUT"
-      - name: Debug image results
-        run: |
-          echo "Image pushed: ${{ steps.build-image.outputs.image }}"
 
   deploy:
     name: Deploy to ECS
@@ -98,10 +97,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Get image name
-        run: | 
-          echo "Image: ${{ needs.upload-image.outputs.image }}"
-
       - name: Fill in the new image ID in the AWS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
@@ -110,10 +105,10 @@ jobs:
           container-name: Main
           image: ${{ needs.upload-image.outputs.image }}
 
-#      - name: Deploy AWS ECS with task definition
-#        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
-#        with:
-#          task-definition: ${{ steps.task-def.outputs.task-definition }}
-#          service: ${{ vars.ECS_SERVICE }}
-#          cluster: default-serverless
-#          wait-for-service-stability: true
+      - name: Deploy AWS ECS with task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ vars.ECS_SERVICE }}
+          cluster: default-serverless
+          wait-for-service-stability: true

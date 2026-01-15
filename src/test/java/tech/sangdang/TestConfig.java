@@ -8,7 +8,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -20,15 +19,13 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 public class TestConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public LocalStackContainer localStackContainer() {
+        //noinspection resource
         return new LocalStackContainer(DockerImageName.parse("localstack/localstack:4.3.0"))
                 .withServices(LocalStackContainer.Service.DYNAMODB)
-//                .withCopyFileToContainer(
-//                        MountableFile.forClasspathResource("init-dynamodb-table.sh"),
-//                        "/etc/localstack/init/ready.d/init-dynamodb-table.sh"
-//                )
                 .waitingFor(Wait.forHealthcheck());
     }
 
+    @SuppressWarnings("unused")
     @DynamicPropertySource
     void dynamicProperties(DynamicPropertyRegistry registry, LocalStackContainer localStackContainer) {
         registry.add("aws.dynamodb.endpoint", () ->
