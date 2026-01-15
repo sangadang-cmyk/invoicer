@@ -2,6 +2,8 @@
 table_name="invoice"
 partition_key="invoiceId"
 
+echo "Creating DynamoDB table '$table_name' with partition key '$partition_key'..."
+
 awslocal dynamodb create-table \
     --table-name "$table_name" \
     --key-schema AttributeName="$partition_key",KeyType=HASH \

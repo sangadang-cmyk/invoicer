@@ -14,6 +14,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 @TestConfiguration
 public class TestConfig {
@@ -21,10 +22,10 @@ public class TestConfig {
     public LocalStackContainer localStackContainer() {
         return new LocalStackContainer(DockerImageName.parse("localstack/localstack:4.3.0"))
                 .withServices(LocalStackContainer.Service.DYNAMODB)
-                .withCopyFileToContainer(
-                        MountableFile.forClasspathResource("init-dynamodb-table.sh"),
-                        "/etc/localstack/init/ready.d/init-dynamodb-table.sh"
-                )
+//                .withCopyFileToContainer(
+//                        MountableFile.forClasspathResource("init-dynamodb-table.sh"),
+//                        "/etc/localstack/init/ready.d/init-dynamodb-table.sh"
+//                )
                 .waitingFor(Wait.forHealthcheck());
     }
 
@@ -40,13 +41,28 @@ public class TestConfig {
 
     @Bean
     public DynamoDbClient dynamoDbClient(LocalStackContainer localStack) {
-        return DynamoDbClient.builder()
+        var client = DynamoDbClient.builder()
                 .endpointOverride(localStack.getEndpointOverride(LocalStackContainer.Service.DYNAMODB))
                 .region(Region.of(localStack.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(localStack.getAccessKey(), localStack.getSecretKey())
                 ))
                 .build();
+
+        client.createTable(CreateTableRequest.builder()
+                .tableName("invoice")
+                .keySchema(KeySchemaElement.builder()
+                        .attributeName("invoiceId")
+                        .keyType(KeyType.HASH)
+                        .build())
+                .attributeDefinitions(AttributeDefinition.builder()
+                        .attributeName("invoiceId")
+                        .attributeType(ScalarAttributeType.S)
+                        .build())
+                .billingMode(BillingMode.PAY_PER_REQUEST)
+                .build());
+
+        return client;
     }
 
 
