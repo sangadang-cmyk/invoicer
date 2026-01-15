@@ -1,5 +1,5 @@
 #!/bin/bash
-table_name="invoice"
+table_name="invoicer_invoice"
 partition_key="invoiceId"
 
 awslocal dynamodb create-table \
