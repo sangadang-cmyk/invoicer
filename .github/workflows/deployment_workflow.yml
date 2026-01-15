@@ -75,6 +75,7 @@ jobs:
           echo "::endgroup::"
           docker push $FULL_IMAGE_NAME
           echo "image=$FULL_IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "Pushed image: $FULL_IMAGE_NAME"
 
   deploy:
     name: Deploy to ECS
