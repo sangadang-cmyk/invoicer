@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesByCustomerIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesQuery;
+import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdAndCustomerIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 import tech.sangdang.invoicer.modules.invoice.app.mapper.InvoiceMapper;
@@ -35,5 +38,15 @@ public class InvoiceQueryServiceImpl implements InvoiceQueryService {
         return invoiceRepository.findById(query.getInvoiceId())
                 .map(invoiceMapper::toResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + query.getInvoiceId()));
+    }
+
+    @Override
+    public void getAllInvoicesByCustomerId(GetAllInvoicesByCustomerIdQuery query) {
+
+    }
+
+    @Override
+    public void getInvoiceByIdAndCustomerId(GetInvoiceByIdAndCustomerIdQuery query) {
+
     }
 }
