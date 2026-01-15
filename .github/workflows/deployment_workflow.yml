@@ -64,7 +64,7 @@ jobs:
         id: build-image
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
-          FULL_IMAGE_NAME: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+          FULL_IMAGE_NAME: ${{ steps.login-ecr.outputs.registry }}/${{ vars.AWS_ECR_REPOSITORY }}:${{ github.sha }}
         run: |
           chmod +x ./mvnw
           echo "::group::Maven Build & Dockerize to image: $FULL_IMAGE_NAME"
