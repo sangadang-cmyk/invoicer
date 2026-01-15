@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -21,41 +22,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # 1. Restore the Docker image cache
-      - name: Cache Testcontainers Images
-        uses: actions/cache@v4
-        with:
-          path: ~/docker-cache
-          key: ${{ runner.os }}-testcontainers-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-testcontainers-
-
-      # 2. Load images into Docker if the cache exists
-      - name: Load Docker images
-        run: |
-          if [ -d ~/docker-cache ] && [ "$(ls -A ~/docker-cache)" ]; then
-            ls ~/docker-cache/*.tar | xargs -I {} docker load -i {}
-          fi
-
       - name: Run Tests
         run: |
           chmod +x ./mvnw
           ./mvnw test
-
-      # 3. Save images back to the cache (only if they aren't already there)
-      - name: Save Docker images
-        if: always()
-        run: |
-          mkdir -p ~/docker-cache
-          # List the specific images your Testcontainers use
-          # Common Localstack/DynamoDB images:
-          IMAGES="localstack/localstack:latest amazon/dynamodb-local:latest testcontainers/ryuk:0.8.1"
-          for IMAGE in $IMAGES; do
-            FILE_NAME=$(echo $IMAGE | tr '/:' '-')
-            if [ ! -f ~/docker-cache/$FILE_NAME.tar ]; then
-              docker save $IMAGE -o ~/docker-cache/$FILE_NAME.tar || true
-            fi
-          done
 
   upload-image:
     name: Upload Docker Image to ECR
@@ -104,7 +74,7 @@ jobs:
             -DskipTests=true
           echo "::endgroup::"
           docker push $FULL_IMAGE_NAME
-          echo "image=$FULL_IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "image=$FULL_IMAGE_NAME" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy to ECS
@@ -124,6 +94,10 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Get image name
+        run: | 
+          echo "Image: ${{ needs.upload-image.outputs.image }}"
 
       - name: Fill in the new image ID in the AWS task definition
         id: task-def
