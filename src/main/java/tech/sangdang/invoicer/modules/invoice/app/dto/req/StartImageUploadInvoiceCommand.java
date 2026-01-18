@@ -14,6 +14,7 @@ public class StartImageUploadInvoiceCommand {
     @JsonIgnore
     private String invoiceId;
 
+    @JsonIgnore
     @NotBlank
     private String userId;
 }

@@ -13,6 +13,8 @@ management:
 springdoc:
   swagger-ui:
     enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
 aws:
   s3:
     bucket-name: my-invoicer-bucket

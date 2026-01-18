@@ -1,15 +1,18 @@
 package tech.sangdang.invoicer.modules.invoice.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.sangdang.invoicer.config.OpenAPIConfig;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.CreateInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.UpdateInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 
 import java.util.List;
 
+@SecurityRequirement(name = "BasicAuth")
 @Tag(name = "Invoice")
 public interface InvoiceAdminController {
     String PATH = "/admin/invoice";

@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesByCustomerIdQuery;
+import tech.sangdang.invoicer.common.FindQuery;
+import tech.sangdang.invoicer.common.SearchCriteria;
+import tech.sangdang.invoicer.common.SearchOperation;
+import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesByUserIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesQuery;
-import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdAndCustomerIdQuery;
+import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdAndUserIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 import tech.sangdang.invoicer.modules.invoice.app.mapper.InvoiceMapper;
@@ -27,10 +29,9 @@ public class InvoiceQueryServiceImpl implements InvoiceQueryService {
 
     @Override
     public List<InvoiceResponseDto> getAllInvoices(GetAllInvoicesQuery query) {
-        return invoiceRepository.findAll()
-                .stream()
-                .map(invoiceMapper::toResponse)
-                .toList();
+        return invoiceRepository
+                .find(FindQuery.empty())
+                .stream().map(invoiceMapper::toResponse).toList();
     }
 
     @Override
@@ -41,12 +42,30 @@ public class InvoiceQueryServiceImpl implements InvoiceQueryService {
     }
 
     @Override
-    public void getAllInvoicesByCustomerId(GetAllInvoicesByCustomerIdQuery query) {
-
+    public List<InvoiceResponseDto> getAllInvoicesByUserId(GetAllInvoicesByUserIdQuery query) {
+        return invoiceRepository.find(
+                        FindQuery.builder()
+                                .searchCriteria(
+                                        List.of(SearchCriteria.builder()
+                                                .key("userId")
+                                                .value(query.getUserId())
+                                                .operation(SearchOperation.EQUALS)
+                                                .build())
+                                )
+                                .build()
+                )
+                .stream().map(invoiceMapper::toResponse).toList();
     }
 
     @Override
-    public void getInvoiceByIdAndCustomerId(GetInvoiceByIdAndCustomerIdQuery query) {
-
+    public InvoiceResponseDto getInvoiceByIdAndUserId(GetInvoiceByIdAndUserIdQuery query) {
+        var invoice = invoiceRepository.findById(query.getInvoiceId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + query.getInvoiceId()));
+        
+        if (!invoice.getUserId().equals(query.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to invoice with id: " + query.getInvoiceId());
+        }
+        
+        return this.invoiceMapper.toResponse(invoice);
     }
 }
