@@ -2,7 +2,10 @@ package tech.sangdang.invoicer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import tech.sangdang.invoicer.modules.invoice.infra.s3.S3Config;
 
+@ConfigurationPropertiesScan(basePackageClasses = S3Config.class)
 @SpringBootApplication
 public class InvoicerApplication {
 

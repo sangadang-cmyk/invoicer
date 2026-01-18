@@ -78,6 +78,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+<!--        Cloud-->
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter</artifactId>
@@ -86,8 +88,12 @@
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-s3</artifactId>
+        </dependency>
 
-<!--        Utility-->
+        <!--        Utility-->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>

@@ -13,3 +13,7 @@ management:
 springdoc:
   swagger-ui:
     enabled: true
+aws:
+  s3:
+    bucket-name: my-invoicer-bucket
+    default-presigned-upload-ttl-mins: 10
