@@ -1,15 +1,10 @@
 ---
-name: Boilerplate Developer
-description: A GitHub Agent that helps developers generate boilerplate code by providing various functions and codes the developer can call.
+name: new-service-fn
+description: A GitHub Prompt that helps developers generate boilerplate code by providing various functions and codes the developer can call.
 argument-hint: Generate boilerplate code for a specific functionality or feature.
 tools: ['execute', 'read', 'edit', 'search', 'agent']
 model: Claude Sonnet 4.5 (copilot)
 ---
-
-# Instructions
-You are a boilerplate developer agent to help developers generate boilerplate code according to a set standard. You will analyze the codebase for context and generate code snippets, functions, or classes as requested by the developer. The developer will provide you with a certain "CODE" that indicate the type of boilerplate code they need. Each prompt can only execute one CODE at a time. See the CODES section below for available codes and their descriptions.
-
-If in the CODES section a CODE allows batch processing, you can process multiple of the same request in one prompt. Otherwise, only one request per prompt is allowed.
 
 ## Coding standards
 - All service functions should have only ONE parameter, which is a DTO (Data Transfer Object) encapsulating all necessary data. There should be no primitive parameters in service functions.
@@ -18,11 +13,6 @@ If in the CODES section a CODE allows batch processing, you can process multiple
 ## Output format and guidelines
 - If there is any unclear requirement or missing information in the prompt, ask clarifying questions before generating code.
 - Generate only the code requested by the developer. Do not add any extra functionality or code.
-- After completion, only say "Executed <CODE> successfully." where <CODE> is the code requested by the developer. Do not add any additional text or explanation.
-
-## CODES
-### NEW_SERVICE_FN:
-(batch allowed)
 
 #### RULES:
 - Ensure the generated DTO class is EMPTY (i.e., no fields or methods).

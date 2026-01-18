@@ -1,87 +1,78 @@
-# Copilot Instructions for the Invoicer Project
-
-Welcome to the Invoicer project! This document provides essential guidelines and conventions to help AI coding agents contribute effectively to this codebase. Please follow these instructions to ensure consistency and maintainability.
+# Copilot Instructions for Invoicer
 
 ## Project Overview
-The Invoicer project is a Java-based application for managing invoices. It follows a modular architecture, with the main components organized under the `src/main/java/tech/sangdang/invoicer/modules/invoice` directory. The key submodules include:
 
-- **API Layer**: Handles HTTP requests and responses. Key files:
-  - `InvoiceAdminController.java`
-  - `InvoiceInternalController.java`
-  - `InvoiceUserController.java`
+- **Architecture:**  
+  - Java 25, Spring Boot 4, Maven, AWS ECS Fargate deployment.
+  - Modular structure:  
+    - `modules/invoice` contains API controllers (`api/`), service layer (`app/service/`), DTOs (`app/dto/req|res/`), domain models (`domain/`), repository interfaces (`domain/repository/`), and infrastructure implementations (`infra/`).
+    - Entry point: [src/main/java/tech/sangdang/invoicer/InvoicerApplication.java](src/main/java/tech/sangdang/invoicer/InvoicerApplication.java).
 
-- **Application Layer**: Contains business logic and service classes. Key files:
-  - `InvoiceManagementService.java`
-  - `InvoiceQueryService.java`
-  - `InvoiceMapper.java`
+- **Service Layer Pattern:**  
+  - All service functions accept a single DTO parameter (see `app/dto/req/`).
+  - DTOs are named using the pattern:  
+    - Commands: `<Action>Command` (e.g., `CreateInvoiceCommand`)
+    - Queries: `<Action>Query` (e.g., `GetInvoiceByIdQuery`)
+  - Service functions always return `void`, regardless of implied return values.
 
-- **Domain Layer**: Defines core domain models and interfaces. Key files:
-  - `Invoice.java`
-  - `InvoiceAllowedTypes.java`
-  - `InvoiceStatus.java`
-  - `repository/InvoiceRepositoryImpl.java`
-
-- **Infrastructure Layer**: Implements data access and integration with external systems. Key files:
-  - `infra/InvoiceRepositoryImpl.java`
+- **Controllers:**  
+  - API endpoints are split by user/admin/internal in `api/`.
+  - Implementation classes are in `api/impl/`.
 
 ## Developer Workflows
 
-### Building the Project
-This project uses Maven for build management. To build the project, run:
+- **Build:**  
+  - Use Maven wrapper:  
+    ```
+    ./mvnw clean package
+    ```
+- **Test:**  
+  - Run all tests:  
+    ```
+    ./mvnw test
+    ```
+  - Cucumber tests:  
+    - Feature files: [src/test/resources/tech.sangdang/Invoice.feature](src/test/resources/tech.sangdang/Invoice.feature)
+    - Steps: [src/test/java/tech/sangdang/steps/InvoiceSteps.java](src/test/java/tech/sangdang/steps/InvoiceSteps.java)
 
-```
-./mvnw clean install
-```
+- **Deploy:**  
+  - GitHub Actions workflow: [deployment_workflow.yml](.github/workflows/deployment_workflow.yml)
+  - Builds Docker image, pushes to AWS ECR, deploys to ECS using [task-definition.json](task-definition.json).
 
-### Running Tests
-Tests are written using Cucumber and JUnit. To execute the tests, run:
+## Conventions & Patterns
 
-```
-./mvnw test
-```
+- **DTOs:**  
+  - Located in `app/dto/req/` and `app/dto/res/`.
+  - Always empty for new service functions (no fields/methods).
+  - Annotated with Lombok (`@Data`, `@NoArgsConstructor`).
 
-### Debugging
-- The main application entry point is `InvoicerApplication.java`.
-- Use your IDE's debugging tools to set breakpoints and inspect the application.
+- **Service Functions:**  
+  - Located in `app/service/`.
+  - Only one parameter (DTO), no primitive parameters.
+  - No return value (`void` only).
 
-### Running the Application
-To run the application locally, execute:
+- **Repository Pattern:**  
+  - Interface in `domain/repository/`, implementation in `infra/`.
 
-```
-./mvnw spring-boot:run
-```
-
-### Deployment
-Deployment configurations are managed using GitHub Actions. The workflow file is located at `.github/workflows/deployment_workflow.yml`.
-
-## Project-Specific Conventions
-
-1. **Package Structure**: Follow the existing modular structure under `src/main/java/tech/sangdang/invoicer/modules`.
-2. **DTOs**: Data Transfer Objects (DTOs) are located under `app/dto/req` and `app/dto/res`. Use `InvoiceMapper` for mapping between domain models and DTOs.
-3. **Testing**: Cucumber feature files are located in `test/resources/tech.sangdang`. Step definitions are in `test/java/tech/sangdang/steps`.
-4. **Configuration**: Application configurations are managed in `application.yml` under `src/main/resources`.
-5. **Repository Pattern**: Data access is implemented using the repository pattern. See `domain/repository` and `infra/InvoiceRepositoryImpl.java` for examples.
-
-## External Dependencies
-- **Spring Boot**: Used for application framework and dependency injection.
-- **Maven**: Build and dependency management.
-- **Cucumber**: Behavior-driven development (BDD) testing framework.
+- **Mapping:**  
+  - Use MapStruct for DTO/entity mapping ([app/mapper/InvoiceMapper.java](src/main/java/tech/sangdang/invoicer/modules/invoice/app/mapper/InvoiceMapper.java)).
 
 ## Integration Points
-- **Database**: The project interacts with a database. Initialization scripts are located in `test/resources/init-dynamodb-table.sh`.
-- **Static Resources**: Static files are located in `src/main/resources/static`.
-- **Templates**: HTML templates are located in `src/main/resources/templates`.
 
-## Key Files and Directories
-- `src/main/java/tech/sangdang/invoicer/`: Main source code directory.
-- `src/main/resources/`: Configuration and resource files.
-- `test/java/tech/sangdang/`: Test files and step definitions.
-- `.github/workflows/`: CI/CD workflows.
+- **AWS:**  
+  - Uses AWS credentials from environment variables or GitHub secrets.
+  - ECS deployment via Fargate.
+  - ECR for Docker images.
 
-## Notes for AI Agents
-- Always adhere to the existing modular structure and naming conventions.
-- Ensure all new code is covered by tests, preferably using Cucumber.
-- Update `application.yml` cautiously to avoid breaking configurations.
-- Follow the repository pattern for data access.
+- **Spring Cloud AWS:**  
+  - Configured in `application.yml` and `application-local.yml`.
 
-For any questions or clarifications, refer to the `HELP.md` file or consult the project maintainers.
+## Examples
+
+- To add a new service function, create an empty DTO in `app/dto/req/`, then add a `void` method to the relevant service class in `app/service/`, accepting only the DTO.
+
+---
+
+Please review and let me know if any section is unclear or missing details specific to your workflows or architecture. I can iterate further based on your feedback.
+
+- Be extremely concise. Sacrifice grammar for the sake of concision. 
