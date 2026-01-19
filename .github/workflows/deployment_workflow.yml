@@ -22,11 +22,39 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
+          
+      - name: Download cached docker images
+        id: download-docker-cache
+        uses: actions/cache@v4
+        with:
+          path: '/tmp/test/docker-images'
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-docker-
+      
+      - name: Load cached docker images to docker
+        if: steps.download-docker-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "Loading cached docker images..."
+          docker load -i /tmp/test/docker-images/docker-images.tar || echo "No cached docker images to load."
 
       - name: Run Tests
         run: |
           chmod +x ./mvnw
           ./mvnw test
+          
+      - name: Update cache with new docker images
+        if: steps.download-docker-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/test/docker-images
+          # Filter for actual images to avoid saving 'none' or intermediate layers
+          docker save $(docker images -q) -o /tmp/test/docker-images/docker-images.tar
+
+      - name: Explicit Cache Save
+        if: steps.download-docker-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/test/docker-images
+          key: ${{ steps.download-docker-cache.outputs.cache-primary-key }}
 
   upload-image:
     name: Upload Docker Image to ECR
