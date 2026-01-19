@@ -17,5 +17,5 @@ springdoc:
     tags-sorter: alpha
 aws:
   s3:
-    bucket-name: my-invoicer-bucket
+    bucket-name: invoicer-inbound
     default-presigned-upload-ttl-mins: 10

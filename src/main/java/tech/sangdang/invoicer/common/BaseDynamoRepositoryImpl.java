@@ -46,6 +46,9 @@ public class BaseDynamoRepositoryImpl<T> implements QueryDynamoRepository<T> {
     }
 
     private Expression.Builder applyCriteria(List<SearchCriteria> criteria, Expression.Builder expressionBuilder) {
+        if(criteria == null || criteria.isEmpty()) {
+            return expressionBuilder;
+        }
         StringJoiner expressionString = new StringJoiner(" AND ");
         Map<String, AttributeValue> values = new HashMap<>();
         Map<String, String> names = new HashMap<>();
@@ -60,7 +63,6 @@ public class BaseDynamoRepositoryImpl<T> implements QueryDynamoRepository<T> {
                 case SearchOperation.NOT_EQUALS -> namePlaceholder + " != " + valPlaceholder;
                 case SearchOperation.GREATER_THAN -> namePlaceholder + " > " + valPlaceholder;
                 case SearchOperation.LESS_THAN -> namePlaceholder + " < " + valPlaceholder;
-                default -> throw new IllegalArgumentException("Unknown operation: " + c.operation());
             };
 
             expressionString.add(op);

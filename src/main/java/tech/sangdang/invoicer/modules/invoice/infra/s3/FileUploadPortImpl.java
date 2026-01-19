@@ -25,7 +25,7 @@ public class FileUploadPortImpl implements FileUploadPort {
         try (S3Presigner presigner = S3Presigner.create()) {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(s3Config.getBucketName())
-                    .key(invoice.getInvoiceId())
+                    .key(s3Config.getKey(invoice.getInvoiceId()))
                     .metadata(new HashMap<>())
                     .build();
 
