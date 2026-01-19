@@ -1,4 +1,4 @@
-package tech.sangdang.invoicer.common;
+package tech.sangdang.invoicer.common.core;
 
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import lombok.RequiredArgsConstructor;

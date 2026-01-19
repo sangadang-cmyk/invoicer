@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import tech.sangdang.invoicer.common.FindQuery;
-import tech.sangdang.invoicer.common.SearchCriteria;
-import tech.sangdang.invoicer.common.SearchOperation;
+import tech.sangdang.invoicer.common.core.FindQuery;
+import tech.sangdang.invoicer.common.core.SearchCriteria;
+import tech.sangdang.invoicer.common.core.SearchOperation;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesByUserIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdAndUserIdQuery;

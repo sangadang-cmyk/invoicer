@@ -63,4 +63,8 @@ public class Invoice {
     public boolean canBeDeleted() {
         return this.status == InvoiceStatus.AWAITING_UPLOAD;
     }
+
+    public boolean canBeStarted() {
+        return this.status == InvoiceStatus.AWAITING_UPLOAD;
+    }
 }

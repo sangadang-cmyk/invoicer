@@ -1,10 +1,9 @@
 package tech.sangdang.invoicer.modules.invoice.domain.repository;
 
 import lombok.NonNull;
-import tech.sangdang.invoicer.common.QueryDynamoRepository;
+import tech.sangdang.invoicer.common.core.QueryDynamoRepository;
 import tech.sangdang.invoicer.modules.invoice.domain.Invoice;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface InvoiceRepository extends QueryDynamoRepository<Invoice> {

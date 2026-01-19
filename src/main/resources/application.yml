@@ -1,6 +1,9 @@
 spring:
   application:
     name: invoicer
+  web:
+    error:
+      include-message: always
   cloud:
     aws:
       region:

@@ -1,4 +1,4 @@
-package tech.sangdang.invoicer.common;
+package tech.sangdang.invoicer.common.core;
 
 import java.util.List;
 import java.util.Optional;

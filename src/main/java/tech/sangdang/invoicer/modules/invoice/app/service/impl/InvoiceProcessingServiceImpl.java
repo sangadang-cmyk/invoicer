@@ -26,6 +26,10 @@ public class InvoiceProcessingServiceImpl implements InvoiceProcessingService {
         if(!invoice.getUserId().equals(command.getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to upload image for this invoice");
         }
+        
+        if(!invoice.canBeStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This invoice cannot be started for image upload");
+        }
 
         String uploadUrl = fileUploadPort.uploadFile(invoice);
 

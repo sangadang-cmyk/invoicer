@@ -1,4 +1,4 @@
-package tech.sangdang.invoicer.common;
+package tech.sangdang.invoicer.common.core;
 
 public enum SearchOperation {
     EQUALS,

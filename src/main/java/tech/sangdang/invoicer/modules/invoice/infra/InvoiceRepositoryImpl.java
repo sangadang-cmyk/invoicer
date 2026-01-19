@@ -1,16 +1,14 @@
 package tech.sangdang.invoicer.modules.invoice.infra;
 
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import tech.sangdang.invoicer.common.BaseDynamoRepositoryImpl;
+import tech.sangdang.invoicer.common.core.BaseDynamoRepositoryImpl;
 import tech.sangdang.invoicer.modules.invoice.domain.Invoice;
 import tech.sangdang.invoicer.modules.invoice.domain.repository.InvoiceRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
