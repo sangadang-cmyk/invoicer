@@ -24,6 +24,6 @@ public class SystemController {
     @GetMapping("/version")
     public String version() {
         log.info("Version endpoint called at " + Instant.now().toString());
-        return "3.3.3";
+        return "4.4.4";
     }
 }
