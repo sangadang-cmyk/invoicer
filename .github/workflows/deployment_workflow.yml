@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: src/main/resources/static/
+          path: ../src/main/resources/static/
   
   test:
     name: Run Tests
