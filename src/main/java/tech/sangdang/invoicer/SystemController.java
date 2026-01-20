@@ -7,15 +7,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//@Tag(name = "_System")
-//@Slf4j
-//@RequiredArgsConstructor
-//@RestController
-//@RequestMapping()
+import java.time.Instant;
+
+@Tag(name = "_System")
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping()
 public class SystemController {
-//    @GetMapping
-//    public String rootHealthCheck() {
-//        log.info("Health check endpoint called");
-//        return "Sang Dang says: SYSTEM IS RUNNING OK";
-//    }
+    @GetMapping
+    public String rootHealthCheck() {
+        log.info("Health check endpoint called at " + Instant.now().toString());
+        return "Sang Dang says: SYSTEM IS RUNNING OK";
+    }
 }
