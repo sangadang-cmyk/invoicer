@@ -87,13 +87,12 @@ jobs:
 #          mkdir -p /tmp/test/docker-images
 #          # Filter for actual images to avoid saving 'none' or intermediate layers
 #          docker save $(docker images -q) -o /tmp/test/docker-images/docker-images.tar
-
-      - name: Explicit Cache Save
-        if: steps.download-docker-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: /tmp/test/docker-images
-          key: ${{ steps.download-docker-cache.outputs.cache-primary-key }}
+#      - name: Explicit Cache Save
+#        if: steps.download-docker-cache.outputs.cache-hit != 'true'
+#        uses: actions/cache/save@v4
+#        with:
+#          path: /tmp/test/docker-images
+#          key: ${{ steps.download-docker-cache.outputs.cache-primary-key }}
 
   upload-image:
     name: Upload Docker Image to ECR
@@ -116,6 +115,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
+          artifact-ids: frontend-build
           path: src/main/resources/static/
 
       - name: Configure AWS credentials
