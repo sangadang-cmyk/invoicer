@@ -13,7 +13,7 @@ jobs:
     environment: production
     defaults:
       run:
-        working-directory: /frontend
+        working-directory: frontend
     
     steps:
       - name: Checkout
