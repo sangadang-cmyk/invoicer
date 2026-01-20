@@ -23,6 +23,6 @@ public class SystemController {
     
     @GetMapping("/version")
     public String version() {
-        return "1.0.0";
+        return "2.2.2";
     }
 }
