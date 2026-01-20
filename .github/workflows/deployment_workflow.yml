@@ -11,13 +11,13 @@ jobs:
     name: Build Frontend
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        working-directory: /frontend
     
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
-      - name: Go to frontend directory
-        run: cd frontend
       
       - name: Install PNPM
         uses: pnpm/action-setup@v4
