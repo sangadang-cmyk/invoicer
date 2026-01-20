@@ -13,11 +13,16 @@ import java.time.Instant;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping()
+@RequestMapping("/system")
 public class SystemController {
-    @GetMapping
+    @GetMapping("root-health-check")
     public String rootHealthCheck() {
         log.info("Health check endpoint called at " + Instant.now().toString());
         return "Sang Dang says: SYSTEM IS RUNNING OK";
+    }
+    
+    @GetMapping("/version")
+    public String version() {
+        return "1.0.0";
     }
 }
