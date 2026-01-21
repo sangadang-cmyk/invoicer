@@ -1,3 +1,7 @@
+system:
+  config:
+    deployment-version: ${DEPLOYMENT_VERSION:LOCAL}
+
 spring:
   application:
     name: invoicer
@@ -8,6 +12,11 @@ spring:
     aws:
       region:
         static: ap-southeast-1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER_URI:https://placeholder.com}
 management:
   endpoints:
     web:
@@ -18,6 +27,15 @@ springdoc:
     enabled: true
     operations-sorter: alpha
     tags-sorter: alpha
+    persist-authorization: true
+    filter: true
+    display-request-duration: on
+    syntax-highlight:
+      activated: true
+      theme: obsidian
+    doc-expansion: none
+  api-docs:
+    enabled: true
 aws:
   s3:
     bucket-name: invoicer-inbound

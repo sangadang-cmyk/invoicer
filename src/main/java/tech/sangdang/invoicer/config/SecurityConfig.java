@@ -12,6 +12,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+    
+    public static final String[] DEV_URLS = {
+            "/swagger-ui/**",
+            "/api/v3/api-docs/**",
+            "/actuator/**",
+            "/api/system/**"
+    };
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,14 +27,13 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests((auth) -> auth
-                                .anyRequest().permitAll()
-//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                        .requestMatchers("/actuator/**").permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/user/**").hasRole("USER")
-//                        .requestMatchers("/api/**").authenticated()
-//                        .anyRequest().permitAll()
+                        .requestMatchers(DEV_URLS).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
                 )
+                .oauth2ResourceServer(AbstractHttpConfigurer::disable)
         ;
         return http.build();
     }

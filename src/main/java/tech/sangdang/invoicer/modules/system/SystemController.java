@@ -1,5 +1,6 @@
-package tech.sangdang.invoicer;
+package tech.sangdang.invoicer.modules.system;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +16,19 @@ import java.time.Instant;
 @RestController
 @RequestMapping("/system")
 public class SystemController {
+    private final SystemConfig systemConfig;
+    
+    @Operation(summary = "Root health check. This should emit a log in the console")
     @GetMapping("root-health-check")
     public String rootHealthCheck() {
         log.info("Health check endpoint called at " + Instant.now().toString());
         return "Sang Dang says: SYSTEM IS RUNNING OK";
     }
     
+    @Operation(summary = "Get running version of the application")
     @GetMapping("/version")
     public String version() {
         log.info("Version endpoint called at " + Instant.now().toString());
-        return "4.4.4";
+        return systemConfig.getDeploymentVersion();
     }
 }

@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute, useRouter} from '@tanstack/react-router'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/')({
@@ -6,6 +6,8 @@ export const Route = createFileRoute('/')({
 })
 
 function Login() {
+  const router = useRouter();
+  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -16,6 +18,11 @@ function Login() {
 
   return (
     <div className="p-2">
+      <button onClick={() => router.navigate({
+        to: '/user/dashboard',
+      })}>
+        Go to dashboard
+      </button>
       <h1>Login</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label>
