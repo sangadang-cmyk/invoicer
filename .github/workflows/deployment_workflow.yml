@@ -133,6 +133,11 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+        
+      - name: Update version in application.yml
+        run: |
+          echo "Updating deployment version in application.yml"
+          sed -i "s/deployment-version: .*/deployment-version: ${GITHUB_REF_NAME}/" src/main/resources/application.yml
 
       - name: Build and push image to Amazon ECR
         id: build-image

@@ -1,6 +1,10 @@
 system:
   config:
-    deployment-version: ${DEPLOYMENT_VERSION:LOCAL}
+    deployment-version: LOCAL
+
+logging:
+  level:
+    tech.sangdang.invoicer.config.AwsCognitoAdapterConfig: trace
 
 spring:
   application:
@@ -17,6 +21,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${OIDC_ISSUER_URI:https://placeholder.com}
+      
 management:
   endpoints:
     web:
@@ -34,9 +39,18 @@ springdoc:
       activated: true
       theme: obsidian
     doc-expansion: none
+    oauth:
+      client-id: ${SWAGGER_UI_OAUTH_CLIENT_ID}
+      client-secret: ${SWAGGER_UI_OAUTH_CLIENT_SECRET}
+      scopes:
+        - email
+        - openid
+        - phone
+        - profile
+        - aws.cognito.signin.user.admin
   api-docs:
     enabled: true
 aws:
   s3:
-    bucket-name: invoicer-inbound
+    bucket-name: ${S3_INBOUND_BUCKET_NAME:invoicer-inbound}
     default-presigned-upload-ttl-mins: 10

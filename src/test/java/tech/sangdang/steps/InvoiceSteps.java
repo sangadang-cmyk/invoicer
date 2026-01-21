@@ -20,6 +20,7 @@ import tech.sangdang.invoicer.modules.invoice.app.service.InvoiceQueryService;
 import tech.sangdang.invoicer.modules.invoice.domain.InvoiceAllowedTypes;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,11 +40,13 @@ public class InvoiceSteps {
 
     @When("I submit a new invoice with {string}, {string}, {int}, and {string}")
     public void i_submit_a_new_invoice(String description, String userId, Integer maxSizeInBytes, String allowedTypes) {
+        var createdByUserId = UUID.randomUUID().toString();
         var invoice = invoiceManagementService.createInvoice(CreateInvoiceCommand.builder()
                 .userId(userId)
                 .description(description)
                 .allowedTypes(List.of(InvoiceAllowedTypes.fromString(allowedTypes)))
                 .maxSizeInBytes(maxSizeInBytes)
+                .createdByUserId(createdByUserId)
                 .build());
 
         assertNotNull(invoice, "Invoice should not be null");
@@ -51,6 +54,7 @@ public class InvoiceSteps {
         assertEquals(description, invoice.getDescription(), "Description should match");
         assertEquals(userId, invoice.getUserId(), "User ID should match");
         assertEquals(maxSizeInBytes, invoice.getMaxSizeInBytes(), "Max size should match");
+        assertEquals(createdByUserId, invoice.getCreatedByUserId(), "Created by user ID should match");
 
         this.lastCreatedInvoice = invoice;
     }

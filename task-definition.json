@@ -33,6 +33,24 @@
           "name": "SPRING_PROFILES_ACTIVE",
           "value": "prod"
         }
+      ],
+      "secrets": [
+        {
+          "name": "OIDC_ISSUER_URI",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/OIDC_ISSUER_URI"
+        },
+        {
+          "name": "S3_INBOUND_BUCKET_NAME",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/S3_INBOUND_BUCKET_NAME" 
+        },
+        {
+          "name": "SWAGGER_UI_OAUTH_CLIENT_ID",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SWAGGER_UI_OAUTH_CLIENT_ID"
+        },
+        {
+          "name": "SWAGGER_UI_OAUTH_CLIENT_SECRET",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SWAGGER_UI_OAUTH_CLIENT_SECRET"
+        }
       ]
     }
   ]

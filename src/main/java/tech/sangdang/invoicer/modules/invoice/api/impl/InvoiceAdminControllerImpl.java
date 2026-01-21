@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.sangdang.invoicer.modules.invoice.api.InvoiceAdminController;
@@ -23,9 +24,11 @@ public class InvoiceAdminControllerImpl implements InvoiceAdminController {
     private final InvoiceQueryService invoiceQueryService;
 
     @Override
-    public ResponseEntity<InvoiceResponseDto> createInvoice(CreateInvoiceCommand command) {
+    public ResponseEntity<InvoiceResponseDto> createInvoice(CreateInvoiceCommand command, Jwt principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(invoiceManagementService.createInvoice(command));
+                .body(invoiceManagementService.createInvoice(
+                        command.toBuilder().createdByUserId(principal.getSubject()).build()
+                ));
     }
 
     @Override

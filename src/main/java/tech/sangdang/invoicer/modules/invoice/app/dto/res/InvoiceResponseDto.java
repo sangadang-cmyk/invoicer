@@ -20,4 +20,5 @@ public class InvoiceResponseDto {
     private List<String> errorLogs;
     private String createdAt;
     private String updatedAt;
+    private String createdByUserId;
 }

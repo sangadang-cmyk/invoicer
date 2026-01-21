@@ -29,9 +29,11 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
                 command.getUserId(),
                 new HashSet<>(command.getAllowedTypes()),
                 command.getDescription(),
-                command.getMaxSizeInBytes()
+                command.getMaxSizeInBytes(),
+                command.getCreatedByUserId()
         );
-        return this.invoiceMapper.toResponse(this.invoiceRepository.persist(invoice));
+        var persistedInvoice = this.invoiceRepository.persist(invoice);
+        return this.invoiceMapper.toResponse(persistedInvoice);
     }
 
     @Override

@@ -2,7 +2,7 @@ package tech.sangdang.invoicer.modules.invoice.api.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.sangdang.invoicer.modules.invoice.api.InvoiceUserController;
@@ -25,25 +25,25 @@ public class InvoiceUserControllerImpl implements InvoiceUserController {
     private final InvoiceProcessingService invoiceProcessingService;
 
     @Override
-    public List<InvoiceResponseDto> getAllInvoices(UserDetails principal) {
+    public List<InvoiceResponseDto> getAllInvoices(Jwt principal) {
         return invoiceQueryService.getAllInvoicesByUserId(GetAllInvoicesByUserIdQuery.builder()
-                .userId(principal.getUsername())
+                .userId(principal.getSubject())
                 .build());
     }
 
     @Override
-    public InvoiceResponseDto getInvoiceById(String invoiceId, UserDetails principal) {
+    public InvoiceResponseDto getInvoiceById(String invoiceId, Jwt principal) {
         return invoiceQueryService.getInvoiceByIdAndUserId(GetInvoiceByIdAndUserIdQuery.builder()
                 .invoiceId(invoiceId)
-                .userId(principal.getUsername())
+                .userId(principal.getSubject())
                 .build());
     }
 
     @Override
-    public ImageUploadAttemptDto startProcessingInvoice(String invoiceId, StartImageUploadInvoiceCommand command, UserDetails principal) {
+    public ImageUploadAttemptDto startProcessingInvoice(String invoiceId, StartImageUploadInvoiceCommand command, Jwt principal) {
         return invoiceProcessingService.startImageUploadInvoice(command.toBuilder()
                 .invoiceId(invoiceId)
-                .userId(principal.getUsername())
+                .userId(principal.getSubject())
                 .build());
     }
 }

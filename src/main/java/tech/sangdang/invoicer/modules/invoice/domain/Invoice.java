@@ -23,6 +23,7 @@ public class Invoice {
     private List<String> errorLogs;
     private String createdAt;
     private String updatedAt;
+    private String createdByUserId;
 
     @DynamoDbPartitionKey
     public String getInvoiceId() {
@@ -42,7 +43,8 @@ public class Invoice {
             @NonNull String userId,
             @NonNull Set<InvoiceAllowedTypes> allowedTypes,
             @NonNull String description,
-            @NonNull Integer maxSizeInBytes
+            @NonNull Integer maxSizeInBytes,
+            @NonNull String createdByUserId
     ) {
         Invoice invoice = Invoice.ofDefault();
         invoice.setStatus(InvoiceStatus.AWAITING_UPLOAD);
@@ -53,6 +55,7 @@ public class Invoice {
                 .collect(Collectors.toSet()));
         invoice.setDescription(description);
         invoice.setMaxSizeInBytes(maxSizeInBytes);
+        invoice.setCreatedByUserId(createdByUserId);
         return invoice;
     }
 
