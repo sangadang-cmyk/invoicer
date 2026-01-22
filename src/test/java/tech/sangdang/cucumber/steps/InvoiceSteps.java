@@ -1,15 +1,10 @@
-package tech.sangdang.steps;
+package tech.sangdang.cucumber.steps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.server.ResponseStatusException;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import tech.sangdang.TestConfig;
-import tech.sangdang.invoicer.InvoicerApplication;
+import tech.sangdang.cucumber.CucumberSpringParent;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.CreateInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.DeleteInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdQuery;
@@ -24,12 +19,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@Testcontainers(disabledWithoutDocker = true)
-@Import(TestConfig.class)
-@SpringBootTest(classes = InvoicerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@CucumberContextConfiguration
-public class InvoiceSteps {
+public class InvoiceSteps extends CucumberSpringParent {
     @Autowired
     private InvoiceQueryService invoiceQueryService;
 

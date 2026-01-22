@@ -1,4 +1,4 @@
-package tech.sangdang;
+package tech.sangdang.config;
 
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 @TestConfiguration
-public class TestConfig {
+public class LocalStackTestConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public LocalStackContainer localStackContainer() {
         //noinspection resource

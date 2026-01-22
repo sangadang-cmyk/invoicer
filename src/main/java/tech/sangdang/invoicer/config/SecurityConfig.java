@@ -19,7 +19,6 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/api/v3/api-docs/**",
             "/actuator/**",
-            "/api/system/**"
     };
 
     @Bean
@@ -32,6 +31,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(DEV_URLS).permitAll()
+                        .requestMatchers("/api/public/**", "/api/system/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole(AppSecurity.Role.ADMIN)
                         .requestMatchers("/api/user/**").hasRole(AppSecurity.Role.USER)
                         .requestMatchers("/api/**").authenticated()
