@@ -3,6 +3,7 @@ package tech.sangdang.invoicer.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
@@ -12,6 +13,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
 
+@EnableMethodSecurity(proxyTargetClass = true)
 @Configuration
 public class SecurityConfig {
 
@@ -32,9 +34,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(DEV_URLS).permitAll()
                         .requestMatchers("/api/public/**", "/api/system/**").permitAll()
+                        .requestMatchers("/api/internal/**").hasAuthority(AppSecurity.Scope.DEFAULT)
                         .requestMatchers("/api/admin/**").hasRole(AppSecurity.Role.ADMIN)
                         .requestMatchers("/api/user/**").hasRole(AppSecurity.Role.USER)
-                        .requestMatchers("/api/internal/**").hasAuthority(AppSecurity.Scope.DEFAULT)
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
