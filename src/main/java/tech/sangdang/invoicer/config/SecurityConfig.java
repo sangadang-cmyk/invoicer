@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**", "/api/system/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole(AppSecurity.Role.ADMIN)
                         .requestMatchers("/api/user/**").hasRole(AppSecurity.Role.USER)
+                        .requestMatchers("/api/internal/**").hasAuthority(AppSecurity.Scope.DEFAULT)
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +22,16 @@ public class AwsCognitoAdapterConfig {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         // assign a converter from jwt to authorities (how do I get authorities from my jwt?)
         converter.setJwtGrantedAuthoritiesConverter((jwt) -> {
+            List<GrantedAuthority> authorities = new ArrayList<>();
+
+            // extract SCOPES
+            JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
+            authorities.addAll(defaultConverter.convert(jwt));
+
+            // extract ROLES
             @SuppressWarnings("unchecked") List<String> rawAuthorities = (List<String>) jwt.getClaims().getOrDefault(COGNITO_GROUPS_CLAIM, Collections.<String>emptyList());
 
             log.debug("Raw Authorities from JWT: {}", rawAuthorities);
-            List<GrantedAuthority> authorities = new ArrayList<>();
             rawAuthorities
                     .stream()
                     .map((role) -> new SimpleGrantedAuthority("ROLE_" + role))
