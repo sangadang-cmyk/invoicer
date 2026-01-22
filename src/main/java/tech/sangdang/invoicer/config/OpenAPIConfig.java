@@ -21,7 +21,7 @@ import tech.sangdang.invoicer.modules.system.SystemConfig;
 public class OpenAPIConfig {
     private final SystemConfig systemConfig;
 //    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-    private String domainUrl = "https://ap-southeast-14oqtgcgsd.auth.ap-southeast-1.amazoncognito.com";
+    private String domainUrl = "https://auth.sangdang.tech";
 
     @Bean
     public OpenAPI openAPI() {
