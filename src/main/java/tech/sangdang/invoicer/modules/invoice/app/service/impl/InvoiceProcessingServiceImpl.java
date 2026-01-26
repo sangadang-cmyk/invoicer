@@ -2,12 +2,13 @@ package tech.sangdang.invoicer.modules.invoice.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.StartImageUploadInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.ImageUploadAttemptDto;
 import tech.sangdang.invoicer.modules.invoice.app.service.InvoiceProcessingService;
+import tech.sangdang.invoicer.modules.invoice.domain.error.InvoiceAccessDeniedError;
+import tech.sangdang.invoicer.modules.invoice.domain.error.InvoiceCannotBeStartedError;
+import tech.sangdang.invoicer.modules.invoice.domain.error.InvoiceNotFoundError;
 import tech.sangdang.invoicer.modules.invoice.domain.ports.FileUploadPort;
 import tech.sangdang.invoicer.modules.invoice.domain.repository.InvoiceRepository;
 
@@ -21,14 +22,14 @@ public class InvoiceProcessingServiceImpl implements InvoiceProcessingService {
     @Override
     public ImageUploadAttemptDto startImageUploadInvoice(StartImageUploadInvoiceCommand command) {
         var invoice = invoiceRepository.findById(command.getInvoiceId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found"));
+                .orElseThrow(() -> new InvoiceNotFoundError("ID", command.getInvoiceId()));
 
         if(!invoice.getUserId().equals(command.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to upload image for this invoice");
+            throw new InvoiceAccessDeniedError();
         }
         
         if(!invoice.canBeStarted()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This invoice cannot be started for image upload");
+            throw new InvoiceCannotBeStartedError(command.getInvoiceId());
         }
 
         String uploadUrl = fileUploadPort.uploadFile(invoice);

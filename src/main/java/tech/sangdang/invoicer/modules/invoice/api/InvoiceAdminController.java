@@ -1,5 +1,6 @@
 package tech.sangdang.invoicer.modules.invoice.api;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,36 +16,37 @@ import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 
 import java.util.List;
 
+@Hidden
 @SecurityRequirement(name = AppSecurity.OAUTH2)
 @Tag(name = "Invoice")
 public interface InvoiceAdminController {
     String PATH = "/admin/invoice";
 
-    @Operation(summary = "Create an invoice")
+    @Operation(summary = "[admin] Create an invoice")
     @PostMapping()
     default ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody CreateInvoiceCommand command, @AuthenticationPrincipal Jwt principal) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @Operation(summary = "Update an invoice")
+    @Operation(summary = "[admin] Update an invoice")
     @PatchMapping("/{invoiceId}")
     default InvoiceResponseDto updateInvoice(@PathVariable String invoiceId, @RequestBody UpdateInvoiceCommand command) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @Operation(summary = "Delete an invoice")
+    @Operation(summary = "[admin] Delete an invoice")
     @DeleteMapping("/{invoiceId}")
     default ResponseEntity<Void> deleteInvoice(@PathVariable String invoiceId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @Operation(summary = "Get my invoices")
+    @Operation(summary = "[admin] Get my invoices")
     @GetMapping("/batch")
     default List<InvoiceResponseDto> getAllInvoices() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @Operation(summary = "Get my invoice by ID")
+    @Operation(summary = "[admin] Get my invoice by ID")
     @GetMapping("/{invoiceId}")
     default InvoiceResponseDto getInvoiceById(@PathVariable String invoiceId) {
         throw new UnsupportedOperationException("Not implemented yet");

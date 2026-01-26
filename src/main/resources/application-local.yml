@@ -1,8 +1,8 @@
 system:
   config:
     deployment-version: LOCAL
-    auth-url: https://auth.sangdang.tech
-    user-pool-id: ap-southeast-1_4OQTgCgSd
+    auth-url: http://localhost.localstack.cloud:4566/_aws/cognito-idp
+    user-pool-id: ap-southeast-1_localpoolid
 
 logging:
   level:
@@ -18,11 +18,14 @@ spring:
     aws:
       region:
         static: ap-southeast-1
+      endpoint: http://localhost.localstack.cloud:4566
+      dynamodb:
+        endpoint: http://localhost.localstack.cloud:4566
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${OIDC_ISSUER_URI:https://placeholder.com}
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost.localstack.cloud:4566/ap-southeast-1_localpoolid}
 management:
   endpoints:
     web:
@@ -41,8 +44,8 @@ springdoc:
       theme: obsidian
     doc-expansion: none
     oauth:
-      client-id: ${SWAGGER_UI_OAUTH_CLIENT_ID}
-      client-secret: ${SWAGGER_UI_OAUTH_CLIENT_SECRET}
+      client-id: ${SWAGGER_UI_OAUTH_CLIENT_ID:local-swagger-client-id}
+      client-secret: ${SWAGGER_UI_OAUTH_CLIENT_SECRET:secret}
       scopes:
         - email
         - openid

@@ -20,8 +20,6 @@ import tech.sangdang.invoicer.modules.system.SystemConfig;
 @Configuration
 public class OpenAPIConfig {
     private final SystemConfig systemConfig;
-//    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-    private String domainUrl = "https://auth.sangdang.tech";
 
     @Bean
     public OpenAPI openAPI() {
@@ -44,18 +42,29 @@ public class OpenAPIConfig {
                                 .type(SecurityScheme.Type.OAUTH2)
                                 .flows(new OAuthFlows()
                                         .authorizationCode(new OAuthFlow()
-                                                .authorizationUrl(this.domainUrl + "/oauth2/authorize")
-                                                .tokenUrl(this.domainUrl + "/oauth2/token")
-                                                .scopes(new Scopes())
+                                                .authorizationUrl(this.systemConfig.getAuthUrl() + "/oauth2/authorize")
+                                                .tokenUrl(this.systemConfig.getAuthUrl() + "/oauth2/token")
+                                                .scopes(new Scopes()
+                                                )
+                                        )
+                                        .clientCredentials(new OAuthFlow()
+                                                .tokenUrl(this.systemConfig.getAuthUrl() + "/oauth2/token")
+                                                .scopes(new Scopes()
+                                                        .addString("invoicer-api/create", "Create resources in Invoicer API")
+                                                        .addString("invoicer-api/read-any", "Read resources in Invoicer API")
+                                                        .addString("invoicer-api/update", "Update resources in Invoicer API")
+                                                        .addString("invoicer-api/delete", "Delete resources in Invoicer API")
+                                                        .addString("invoicer-api/default", "Default scope for Invoicer API")
+                                                )
                                         )
                                 )
                         )
-                        .addSecuritySchemes("Bearer", new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")
-                                .name("Bearer")
-                        )
+//                        .addSecuritySchemes("Bearer", new SecurityScheme()
+//                                .type(SecurityScheme.Type.HTTP)
+//                                .scheme("bearer")
+//                                .bearerFormat("JWT")
+//                                .name("Bearer")
+//                        )
                 )
                 ;
     }

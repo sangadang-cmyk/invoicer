@@ -14,7 +14,6 @@ public class InvoiceResponseDto {
     private String userId;
     private InvoiceStatus status;
     private String description;
-    private String s3Key;
     private Integer maxSizeInBytes;
     private Set<String> allowedTypes;
     private List<String> errorLogs;

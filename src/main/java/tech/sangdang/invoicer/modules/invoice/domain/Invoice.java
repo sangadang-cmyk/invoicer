@@ -17,7 +17,6 @@ public class Invoice {
     private String userId;
     private InvoiceStatus status;
     private String description;
-    private String s3Key;
     private Integer maxSizeInBytes;
     private Set<String> allowedTypes;
     private List<String> errorLogs;
@@ -68,6 +67,10 @@ public class Invoice {
     }
 
     public boolean canBeStarted() {
+        return this.status == InvoiceStatus.AWAITING_UPLOAD;
+    }
+
+    public boolean canBeUpdated() {
         return this.status == InvoiceStatus.AWAITING_UPLOAD;
     }
 }

@@ -18,14 +18,14 @@ import java.time.Instant;
 public class SystemController {
     private final SystemConfig systemConfig;
     
-    @Operation(summary = "Root health check. This should emit a log in the console")
+    @Operation(summary = "[system] Root health check. This should emit a log in the console")
     @GetMapping("root-health-check")
     public String rootHealthCheck() {
         log.info("Health check endpoint called at " + Instant.now().toString());
         return "Sang Dang says: SYSTEM IS RUNNING OK";
     }
     
-    @Operation(summary = "Get running version of the application")
+    @Operation(summary = "[system] Get running version of the application")
     @GetMapping("/version")
     public String version() {
         log.info("Version endpoint called at " + Instant.now().toString());

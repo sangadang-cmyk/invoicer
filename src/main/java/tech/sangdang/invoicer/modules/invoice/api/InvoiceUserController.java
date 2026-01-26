@@ -21,15 +21,15 @@ import java.util.List;
 public interface InvoiceUserController {
     String PATH = "/user/invoice";
 
-    @Operation(summary = "Get my invoices")
+    @Operation(summary = "[user] Get my invoices")
     @GetMapping("/batch")
     List<InvoiceResponseDto> getAllInvoices(@AuthenticationPrincipal Jwt principal);
 
-    @Operation(summary = "Get my invoice by ID")
+    @Operation(summary = "[user] Get my invoice by ID")
     @GetMapping("/{invoiceId}")
     InvoiceResponseDto getInvoiceById(@PathVariable String invoiceId, @AuthenticationPrincipal Jwt principal);
 
-    @Operation(summary = "Start processing an invoice")
+    @Operation(summary = "[user] Start processing an invoice")
     @PutMapping("/{invoiceId}/start")
     ImageUploadAttemptDto startProcessingInvoice(@PathVariable String invoiceId, @RequestBody StartImageUploadInvoiceCommand command, @AuthenticationPrincipal Jwt principal);
 }

@@ -15,6 +15,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
+/**
+ * This file starts a localstack instance with the configured services needed for this application
+ */
 @TestConfiguration
 public class LocalStackTestConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
