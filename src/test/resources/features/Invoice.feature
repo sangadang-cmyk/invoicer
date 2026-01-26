@@ -1,5 +1,6 @@
 Feature: Invoice
   Scenario Outline: Create invoice
+    Given I have logged in as internal
     When I submit a new invoice with "<description>", "<userId>", <maxSizeInBytes>, and "<allowedTypes>"
     Then I should see the invoice created
     Examples:
@@ -9,6 +10,7 @@ Feature: Invoice
       | Test Invoice 3 | 103    | 5242880        | APPLICATION_PDF |
 
   Scenario Outline: Update invoice
+    Given I have logged in as internal
     Given I submit a new invoice with "<description>", "<userId>", <maxSizeInBytes>, and "<allowedTypes>"
     When I update the invoice with new "<new_description>" and <new_maxSizeInBytes>
     Then I should see the invoice updated with new "<new_description>" and <new_maxSizeInBytes>
@@ -19,6 +21,7 @@ Feature: Invoice
       | Test Invoice 3 | 103    | 5242880        | APPLICATION_PDF | Updated Invoice 3 | 10485760           |
 
   Scenario Outline: Delete invoice
+    Given I have logged in as internal
     Given I submit a new invoice with "<description>", "<userId>", <maxSizeInBytes>, and "<allowedTypes>"
     When I delete the invoice
     Then I should not see the invoice in the system

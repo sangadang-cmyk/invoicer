@@ -9,7 +9,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import tech.sangdang.cucumber.CucumberSpringParent;
-import tech.sangdang.invoicer.common.constants.AppSecurity;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -34,7 +33,7 @@ public class AuthenticationSteps extends CucumberSpringParent {
         
         var userId = UUID.randomUUID().toString();
         var email = role.toLowerCase() + "@gmail.com";
-        auth = generateJwt(userId, email, role);
+        auth = generateRoleJwt(userId, email, role);
     }
     
     @When("I attempt to access a {string} resource")

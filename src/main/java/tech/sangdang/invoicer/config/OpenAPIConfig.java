@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
@@ -38,7 +37,7 @@ public class OpenAPIConfig {
                         )
                 )
                 .components(new Components()
-                        .addSecuritySchemes(AppSecurity.OAUTH2, new SecurityScheme()
+                        .addSecuritySchemes(AppSecurity.AUTH_CODE, new SecurityScheme()
                                 .type(SecurityScheme.Type.OAUTH2)
                                 .flows(new OAuthFlows()
                                         .authorizationCode(new OAuthFlow()
@@ -47,6 +46,12 @@ public class OpenAPIConfig {
                                                 .scopes(new Scopes()
                                                 )
                                         )
+                                        
+                                )
+                        )
+                        .addSecuritySchemes(AppSecurity.CLIENT_CREDENTIALS, new SecurityScheme()
+                                .type(SecurityScheme.Type.OAUTH2)
+                                .flows(new OAuthFlows()
                                         .clientCredentials(new OAuthFlow()
                                                 .tokenUrl(this.systemConfig.getAuthUrl() + "/oauth2/token")
                                                 .scopes(new Scopes()
@@ -59,12 +64,6 @@ public class OpenAPIConfig {
                                         )
                                 )
                         )
-//                        .addSecuritySchemes("Bearer", new SecurityScheme()
-//                                .type(SecurityScheme.Type.HTTP)
-//                                .scheme("bearer")
-//                                .bearerFormat("JWT")
-//                                .name("Bearer")
-//                        )
                 )
                 ;
     }

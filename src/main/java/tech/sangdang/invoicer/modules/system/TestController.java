@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,21 +23,21 @@ public class TestController {
     }
     
     @GetMapping("/private/test")
-    @SecurityRequirement(name = AppSecurity.OAUTH2)
+    @SecurityRequirement(name = AppSecurity.AUTH_CODE)
     public String privateTest(@AuthenticationPrincipal Jwt jwt) {
         log.info("JWT Claims: {}", jwt.getClaims());
         return "private test success";
     }
     
     @GetMapping("/admin/test")
-    @SecurityRequirement(name = AppSecurity.OAUTH2)
+    @SecurityRequirement(name = AppSecurity.AUTH_CODE)
     public String adminTest(@AuthenticationPrincipal Jwt principal) {
         log.info("Admin Attributes: {}", principal.getClaims());
         return "admin test success";
     }
     
     @GetMapping("/user/test")
-    @SecurityRequirement(name = AppSecurity.OAUTH2)
+    @SecurityRequirement(name = AppSecurity.AUTH_CODE)
     public String userTest(@AuthenticationPrincipal Jwt principal) {
         log.info("User Attributes: {}", principal.getClaims());
         return "user test success";

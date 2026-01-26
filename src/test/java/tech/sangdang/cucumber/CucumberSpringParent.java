@@ -25,7 +25,7 @@ import java.util.List;
 @ContextConfiguration
 @SpringBootTest(classes = InvoicerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CucumberSpringParent {
-    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor generateJwt(
+    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor generateRoleJwt(
             String userId,
             String email,
             String... roles
@@ -34,9 +34,27 @@ public class CucumberSpringParent {
         if (roles.length == 0) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + AppSecurity.Role.USER));
         } else {
-            Arrays.stream(roles).forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-            });
+            Arrays.stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+        }
+
+        return SecurityMockMvcRequestPostProcessors.jwt()
+                .jwt(builder -> builder
+                        .subject(userId)
+                        .claim("custom:email", email)
+                )
+                .authorities(authorities);
+    }
+
+    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor generateScopeJwt(
+            String userId,
+            String email,
+            String... scopes
+    ) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (scopes.length == 0) {
+            authorities.add(new SimpleGrantedAuthority(AppSecurity.Scope.DEFAULT));
+        } else {
+            Arrays.stream(scopes).forEach(scope -> authorities.add(new SimpleGrantedAuthority(scope)));
         }
 
         return SecurityMockMvcRequestPostProcessors.jwt()

@@ -15,7 +15,7 @@ import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 
 import java.util.List;
 
-@SecurityRequirement(name = AppSecurity.OAUTH2)
+@SecurityRequirement(name = AppSecurity.CLIENT_CREDENTIALS)
 @Tag(name = "Invoice")
 public interface InvoiceInternalController {
     String PATH = "/internal/invoice";

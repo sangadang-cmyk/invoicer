@@ -1,5 +1,6 @@
 package tech.sangdang.cucumber.steps;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class InvoiceSteps extends CucumberSpringParent {
     private InvoiceManagementService invoiceManagementService;
 
     private InvoiceResponseDto lastCreatedInvoice;
+
+    @Given("I have logged in as internal")
+    public void i_have_logged_in_as_internal() {
+        var userId = UUID.randomUUID().toString();
+    }
 
     @When("I submit a new invoice with {string}, {string}, {int}, and {string}")
     public void i_submit_a_new_invoice(String description, String userId, Integer maxSizeInBytes, String allowedTypes) {

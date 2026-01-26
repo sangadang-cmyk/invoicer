@@ -9,7 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
-import tech.sangdang.invoicer.config.OpenAPIConfig;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.CreateInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.UpdateInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
@@ -17,7 +16,7 @@ import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 import java.util.List;
 
 @Hidden
-@SecurityRequirement(name = AppSecurity.OAUTH2)
+@SecurityRequirement(name = AppSecurity.AUTH_CODE)
 @Tag(name = "Invoice")
 public interface InvoiceAdminController {
     String PATH = "/admin/invoice";
