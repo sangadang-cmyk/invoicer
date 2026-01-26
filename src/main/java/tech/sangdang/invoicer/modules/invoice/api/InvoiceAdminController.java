@@ -15,37 +15,36 @@ import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
 
 import java.util.List;
 
-@Hidden
 @SecurityRequirement(name = AppSecurity.AUTH_CODE)
 @Tag(name = "Invoice")
 public interface InvoiceAdminController {
     String PATH = "/admin/invoice";
 
-    @Operation(summary = "[admin] Create an invoice")
-    @PostMapping()
-    default ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody CreateInvoiceCommand command, @AuthenticationPrincipal Jwt principal) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+//    @Operation(summary = "[admin] Create an invoice")
+//    @PostMapping()
+//    default ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody CreateInvoiceCommand command, @AuthenticationPrincipal Jwt principal) {
+//        throw new UnsupportedOperationException("Not implemented yet");
+//    }
+//
+//    @Operation(summary = "[admin] Update an invoice")
+//    @PatchMapping("/{invoiceId}")
+//    default InvoiceResponseDto updateInvoice(@PathVariable String invoiceId, @RequestBody UpdateInvoiceCommand command) {
+//        throw new UnsupportedOperationException("Not implemented yet");
+//    }
+//
+//    @Operation(summary = "[admin] Delete an invoice")
+//    @DeleteMapping("/{invoiceId}")
+//    default ResponseEntity<Void> deleteInvoice(@PathVariable String invoiceId) {
+//        throw new UnsupportedOperationException("Not implemented yet");
+//    }
 
-    @Operation(summary = "[admin] Update an invoice")
-    @PatchMapping("/{invoiceId}")
-    default InvoiceResponseDto updateInvoice(@PathVariable String invoiceId, @RequestBody UpdateInvoiceCommand command) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Operation(summary = "[admin] Delete an invoice")
-    @DeleteMapping("/{invoiceId}")
-    default ResponseEntity<Void> deleteInvoice(@PathVariable String invoiceId) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Operation(summary = "[admin] Get my invoices")
+    @Operation(summary = "[admin] Get all invoices")
     @GetMapping("/batch")
     default List<InvoiceResponseDto> getAllInvoices() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @Operation(summary = "[admin] Get my invoice by ID")
+    @Operation(summary = "[admin] Get any invoice by ID")
     @GetMapping("/{invoiceId}")
     default InvoiceResponseDto getInvoiceById(@PathVariable String invoiceId) {
         throw new UnsupportedOperationException("Not implemented yet");

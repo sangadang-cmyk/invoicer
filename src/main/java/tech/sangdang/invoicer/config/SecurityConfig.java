@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import tech.sangdang.invoicer.common.constants.AppScopes;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
 
 @EnableMethodSecurity(proxyTargetClass = true)
@@ -28,7 +29,8 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtAuthenticationConverter jwtAuthenticationConverter
+            JwtAuthenticationConverter jwtAuthenticationConverter,
+            AppScopes scopes
     ) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -36,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(DEV_URLS).permitAll()
                         .requestMatchers("/api/public/**", "/api/system/**").permitAll()
-                        .requestMatchers("/api/internal/**").hasAuthority(AppSecurity.Scope.DEFAULT)
+                        .requestMatchers("/api/internal/**").hasAuthority(scopes.DEFAULT)
                         .requestMatchers("/api/admin/**").hasRole(AppSecurity.Role.ADMIN)
                         .requestMatchers("/api/user/**").hasRole(AppSecurity.Role.USER)
                         .requestMatchers("/api/**").authenticated()

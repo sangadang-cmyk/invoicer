@@ -6,8 +6,8 @@ awslocal configure set cli_follow_urlparam false
 
 region="ap-southeast-1"
 cognito_user_pool_id="${region}_localpoolid"
-cognito_swagger_client_id="local-swagger-client-id"
-cognito_classroomapi_client_id="local-classroomapi-client-id"
+cognito_swagger_authorization_code_id="local-swagger-ac-client-id"
+cognito_swagger_client_credentials_id="local-swagger-cc-client-id"
 cognito_admin_group_name="ADMIN"
 cognito_user_group_name="USER"
 cognito_admin_account_id="danganhsang09@gmail.com"
@@ -26,17 +26,18 @@ awslocal cognito-idp create-resource-server \
   --user-pool-id "${cognito_user_pool_id}" \
   --identifier "invoicer-api" \
   --name "Invoicer API" \
-  --scopes "ScopeName=create,ScopeDescription=Create invoice" \
+  --scopes "ScopeName=invoice:create,ScopeDescription=Create invoice" \
           "ScopeName=default,ScopeDescription=Default scope" \
-          "ScopeName=delete,ScopeDescription=Delete invoice" \
-          "ScopeName=read-any,ScopeDescription=Read any invoice" \
-          "ScopeName=update,ScopeDescription=Update invoice"
+          "ScopeName=invoice:delete:owned,ScopeDescription=Delete invoice" \
+          "ScopeName=invoice:read:owned,ScopeDescription=Read any invoice" \
+          "ScopeName=invoice:update:owned,ScopeDescription=Update invoice" \
+          "ScopeName=invoice:write:owned,ScopeDescription=Write invoice"
 echo "[END] Create invoicer resource server"
 
-echo "[START] Create swagger app client"
+echo "[START] Create swagger app client: authorization code grant"
 awslocal cognito-idp create-user-pool-client \
   --user-pool-id "${cognito_user_pool_id}" \
-  --client-name "_custom_id_:${cognito_swagger_client_id}" \
+  --client-name "_custom_id_:${cognito_swagger_authorization_code_id}" \
   --generate-secret \
   --explicit-auth-flows ALLOW_USER_PASSWORD_AUTH ALLOW_REFRESH_TOKEN_AUTH \
   --callback-urls="http://localhost:8080/swagger-ui/oauth2-redirect.html" \
@@ -44,23 +45,24 @@ awslocal cognito-idp create-user-pool-client \
   --allowed-o-auth-flows "code" \
   --allowed-o-auth-flows-user-pool-client \
   --supported-identity-providers "COGNITO"
-echo "[END] Create swagger app client"
+echo "[END] Create swagger app client: authorization code grant"
 
-echo "[START] Create classroomApi app client"
+echo "[START] Create swagger app client: client credentials grant"
 awslocal cognito-idp create-user-pool-client \
   --user-pool-id "${cognito_user_pool_id}" \
-  --client-name "_custom_id_:${cognito_classroomapi_client_id}" \
+  --client-name "_custom_id_:${cognito_swagger_client_credentials_id}" \
   --generate-secret \
   --callback-urls="http://localhost:8080/swagger-ui/oauth2-redirect.html" \
-  --allowed-o-auth-scopes "invoicer-api/create" \
+  --allowed-o-auth-scopes "invoicer-api/invoice:create" \
                           "invoicer-api/default" \
-                          "invoicer-api/delete" \
-                          "invoicer-api/read-any" \
-                          "invoicer-api/update" \
+                          "invoicer-api/invoice:delete:owned" \
+                          "invoicer-api/invoice:read:owned" \
+                          "invoicer-api/invoice:update:owned" \
+                          "invoicer-api/invoice:write:owned" \
   --allowed-o-auth-flows "client_credentials" \
   --allowed-o-auth-flows-user-pool-client \
   --supported-identity-providers "COGNITO"
-echo "[END] Create classroomApi app client"
+echo "[END] Create swagger app client: client credentials grant"
 
 echo "Create groups start"
 echo "Create ADMIN group start"

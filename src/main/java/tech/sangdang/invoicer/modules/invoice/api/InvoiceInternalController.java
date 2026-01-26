@@ -20,38 +20,38 @@ import java.util.List;
 public interface InvoiceInternalController {
     String PATH = "/internal/invoice";
 
-    @PreAuthorize("hasAuthority(T(tech.sangdang.invoicer.common.constants.AppSecurity$Scope).CREATE)")
+    @PreAuthorize("hasAnyAuthority(@S.INVOICE_CREATE, @S.INVOICE_WRITE_OWNED)")
     @Operation(summary = "[internal] Create an invoice")
     @PostMapping()
     default ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody CreateInvoiceCommand command, @AuthenticationPrincipal Jwt principal) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @PreAuthorize("hasAuthority(T(tech.sangdang.invoicer.common.constants.AppSecurity$Scope).UPDATE)")
+    @PreAuthorize("hasAnyAuthority(@S.INVOICE_UPDATE_OWNED, @S.INVOICE_WRITE_OWNED)")
     @Operation(summary = "[internal] Update an invoice")
     @PatchMapping("/{invoiceId}")
     default InvoiceResponseDto updateInvoice(@PathVariable String invoiceId, @RequestBody UpdateInvoiceCommand command) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @PreAuthorize("hasAuthority(T(tech.sangdang.invoicer.common.constants.AppSecurity$Scope).DELETE)")
+    @PreAuthorize("hasAnyAuthority(@S.INVOICE_DELETE_OWNED, @S.INVOICE_WRITE_OWNED)")
     @Operation(summary = "[internal] Delete an invoice")
     @DeleteMapping("/{invoiceId}")
     default ResponseEntity<Void> deleteInvoice(@PathVariable String invoiceId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @PreAuthorize("hasAuthority(T(tech.sangdang.invoicer.common.constants.AppSecurity$Scope).READ_ANY)")
-    @Operation(summary = "[internal] Get my invoices")
+    @PreAuthorize("hasAnyAuthority(@S.INVOICE_READ_OWNED)")
+    @Operation(summary = "[internal] Get my created invoices")
     @GetMapping("/batch")
-    default List<InvoiceResponseDto> getAllInvoices() {
+    default List<InvoiceResponseDto> getOwnedInvoices() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @PreAuthorize("hasAuthority(T(tech.sangdang.invoicer.common.constants.AppSecurity$Scope).READ_ANY)")
-    @Operation(summary = "[internal] Get my invoice by ID")
+    @PreAuthorize("hasAnyAuthority(@S.INVOICE_READ_OWNED)")
+    @Operation(summary = "[internal] Get my created invoice by ID")
     @GetMapping("/{invoiceId}")
-    default InvoiceResponseDto getInvoiceById(@PathVariable String invoiceId) {
+    default InvoiceResponseDto getOwnedInvoiceById(@PathVariable String invoiceId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

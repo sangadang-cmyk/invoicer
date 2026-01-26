@@ -2,6 +2,8 @@ package tech.sangdang.invoicer.modules.account.api.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.sangdang.invoicer.modules.account.api.AccountTestController;
@@ -25,5 +27,15 @@ public class AccountTestControllerImpl implements AccountTestController {
     @Override
     public boolean existsAccountId(String accountId) {
         return accountQueryPort.existsUserById(accountId);
+    }
+
+    @Override
+    public ResponseEntity<?> getAuthCodeSelf(Jwt jwt) {
+        return ResponseEntity.ok(jwt.getClaims());
+    }
+
+    @Override
+    public ResponseEntity<?> getClientCredentialsSelf(Jwt jwt) {
+        return ResponseEntity.ok(jwt.getClaims());
     }
 }

@@ -56,5 +56,5 @@ springdoc:
     enabled: true
 aws:
   s3:
-    bucket-name: ${S3_INBOUND_BUCKET_NAME:invoicer-inbound}
+    bucket-name: invoicer-inbound
     default-presigned-upload-ttl-mins: 10

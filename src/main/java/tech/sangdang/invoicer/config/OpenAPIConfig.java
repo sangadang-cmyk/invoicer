@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tech.sangdang.invoicer.common.constants.AppScopes;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
 import tech.sangdang.invoicer.modules.system.SystemConfig;
 
@@ -19,6 +20,7 @@ import tech.sangdang.invoicer.modules.system.SystemConfig;
 @Configuration
 public class OpenAPIConfig {
     private final SystemConfig systemConfig;
+    private final AppScopes scopes;
 
     @Bean
     public OpenAPI openAPI() {
@@ -55,11 +57,12 @@ public class OpenAPIConfig {
                                         .clientCredentials(new OAuthFlow()
                                                 .tokenUrl(this.systemConfig.getAuthUrl() + "/oauth2/token")
                                                 .scopes(new Scopes()
-                                                        .addString("invoicer-api/create", "Create resources in Invoicer API")
-                                                        .addString("invoicer-api/read-any", "Read resources in Invoicer API")
-                                                        .addString("invoicer-api/update", "Update resources in Invoicer API")
-                                                        .addString("invoicer-api/delete", "Delete resources in Invoicer API")
-                                                        .addString("invoicer-api/default", "Default scope for Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.DEFAULT), "Default scope for Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.INVOICE_CREATE), "Create resources in Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.INVOICE_READ_OWNED), "Read resources in Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.INVOICE_UPDATE_OWNED), "Update resources in Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.INVOICE_DELETE_OWNED), "Delete resources in Invoicer API")
+                                                        .addString(scopes.withoutPrefix(scopes.INVOICE_WRITE_OWNED), "Write resources in Invoicer API")
                                                 )
                                         )
                                 )

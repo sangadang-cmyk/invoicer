@@ -36,6 +36,13 @@ public class TestController {
         return "admin test success";
     }
     
+    @GetMapping("/internal/test")
+    @SecurityRequirement(name = AppSecurity.CLIENT_CREDENTIALS)
+    public String internalTest(@AuthenticationPrincipal Jwt principal) {
+        log.info("Internal Attributes: {}", principal.getClaims());
+        return "internal test success";
+    }
+    
     @GetMapping("/user/test")
     @SecurityRequirement(name = AppSecurity.AUTH_CODE)
     public String userTest(@AuthenticationPrincipal Jwt principal) {

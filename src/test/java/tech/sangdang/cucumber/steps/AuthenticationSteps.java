@@ -3,61 +3,61 @@ package tech.sangdang.cucumber.steps;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import tech.sangdang.cucumber.CucumberSpringParent;
+import tech.sangdang.cucumber.CucumberStepParent;
+import tech.sangdang.cucumber.ScenarioContext;
 
-import java.util.Objects;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-public class AuthenticationSteps extends CucumberSpringParent {
+@Slf4j
+public class AuthenticationSteps extends CucumberStepParent {
 
+    @Autowired
+    private ScenarioContext context;
     @Autowired
     private MockMvc mockMvc;
 
-    private MvcResult result;
-    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor auth;
-    
-    @Given("I am an {string} user with role {string}")
-    public void i_am_an_authenticated_user_with_role(String authentication, String role) {
-        if(Objects.equals(authentication, "unauthenticated")) {
-            auth = null;
-            return;
-        }
-        
-        var userId = UUID.randomUUID().toString();
-        var email = role.toLowerCase() + "@gmail.com";
-        auth = generateRoleJwt(userId, email, role);
-    }
-    
-    @When("I attempt to access a {string} resource")
-    public void i_attempt_to_access_a_resource_of_type(String resourceType) throws Exception {
-        String url = switch (resourceType.toLowerCase()) {
-            case "private" -> "/api/private/test";
-            case "public" -> "/api/public/test";
-            case "user" -> "/api/user/test";
-            case "admin" -> "/api/admin/test";
-            default -> throw new IllegalArgumentException("Unknown resource type: " + resourceType);
-        };
-        result = mockMvc.perform(ensureAuth(get(url), auth))
-                .andReturn();
-    }
-    
-    @Then("I should receive a {string} response")
-    public void i_should_receive_a_response(String responseType) throws Exception {
-        int expectedStatus = switch (responseType.toLowerCase()) {
-            case "success" -> HttpStatus.OK.value();
-            case "forbidden" -> HttpStatus.FORBIDDEN.value();
-            case "unauthorized" -> HttpStatus.UNAUTHORIZED.value();
-            default -> throw new IllegalArgumentException("Unknown response type: " + responseType);
-        };
-        assertThat(result.getResponse().getStatus()).isEqualTo(expectedStatus);
+    @Given("I am not logged in")
+    public void i_am_not_logged_in() {
+        context.clearLoggedInSession();
     }
 
+    @Given("I am logged in as {string}")
+    public void i_am_logged_in_as(String userRole) {
+        String userId = "test-user-" + System.currentTimeMillis();
+        context.setLoggedInSession(
+                getRoleJwt(userId, userRole.toUpperCase())
+        );
+    }
+
+    @When("I access a {string}-protected resource")
+    public void i_access_a_protected_resource(String protectionLevel) throws Exception {
+        var mvcResult = mockMvc.perform(
+                ensureAuth(
+                        get("/" + protectionLevel.toLowerCase() + "/test"),
+                        context.getLoggedInSession()
+                )
+        ).andReturn();
+
+        context.addApiResult(mvcResult);
+    }
+
+    @Then("^I (should|shouldnt) be granted access")
+    public void i_be_granted_access(String accessOutcome) {
+        log.info("Resultant status: {}", context.getLatestApiResult().getResponse().getStatus());
+        if (accessOutcome.equalsIgnoreCase("should")) {
+            assertEquals("Expect 200", 200, context.getLatestApiResult().getResponse().getStatus());
+            return;
+        }
+        if (accessOutcome.equalsIgnoreCase("shouldnt")) {
+            assertEquals("Expect 401 or 403", true,
+                    (context.getLatestApiResult().getResponse().getStatus() == 401)
+                            || (context.getLatestApiResult().getResponse().getStatus() == 403));
+            return;
+        }
+        log.warn("Unknown access outcome: {}", accessOutcome);
+    }
 }

@@ -23,28 +23,28 @@ public class InvoiceAdminControllerImpl implements InvoiceAdminController {
     private final InvoiceManagementService invoiceManagementService;
     private final InvoiceQueryService invoiceQueryService;
 
-    @Override
-    public ResponseEntity<InvoiceResponseDto> createInvoice(CreateInvoiceCommand command, Jwt principal) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(invoiceManagementService.createInvoice(
-                        command.toBuilder().createdByUserId(principal.getSubject()).build()
-                ));
-    }
-
-    @Override
-    public InvoiceResponseDto updateInvoice(String invoiceId, UpdateInvoiceCommand command) {
-        return invoiceManagementService.updateInvoice(command.toBuilder()
-                .invoiceId(invoiceId)
-                .build());
-    }
-
-    @Override
-    public ResponseEntity<Void> deleteInvoice(String invoiceId) {
-        invoiceManagementService.deleteInvoice(DeleteInvoiceCommand.builder()
-                .invoiceId(invoiceId)
-                .build());
-        return ResponseEntity.noContent().build();
-    }
+//    @Override
+//    public ResponseEntity<InvoiceResponseDto> createInvoice(CreateInvoiceCommand command, Jwt principal) {
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(invoiceManagementService.createInvoice(
+//                        command.toBuilder().createdByUserId(principal.getSubject()).build()
+//                ));
+//    }
+//
+//    @Override
+//    public InvoiceResponseDto updateInvoice(String invoiceId, UpdateInvoiceCommand command) {
+//        return invoiceManagementService.updateInvoice(command.toBuilder()
+//                .invoiceId(invoiceId)
+//                .build());
+//    }
+//
+//    @Override
+//    public ResponseEntity<Void> deleteInvoice(String invoiceId) {
+//        invoiceManagementService.deleteInvoice(DeleteInvoiceCommand.builder()
+//                .invoiceId(invoiceId)
+//                .build());
+//        return ResponseEntity.noContent().build();
+//    }
 
     @Override
     public List<InvoiceResponseDto> getAllInvoices() {

@@ -47,12 +47,12 @@ public class InvoiceInternalControllerImpl implements InvoiceInternalController 
     }
 
     @Override
-    public List<InvoiceResponseDto> getAllInvoices() {
+    public List<InvoiceResponseDto> getOwnedInvoices() {
         return invoiceQueryService.getAllInvoices(GetAllInvoicesQuery.builder().build());
     }
 
     @Override
-    public InvoiceResponseDto getInvoiceById(String invoiceId) {
+    public InvoiceResponseDto getOwnedInvoiceById(String invoiceId) {
         return invoiceQueryService.getInvoiceById(GetInvoiceByIdQuery.builder()
                 .invoiceId(invoiceId)
                 .build());
