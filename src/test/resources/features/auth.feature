@@ -10,7 +10,7 @@ Feature: Authentication
         | USER  |
 
     Scenario Outline: Authenticate with valid access token
-      Given I am logged in as "<role>"
+      Given I am logged in as mock "<role>"
       When I access a "<role>"-protected resource
       Then I should be granted access
 
@@ -20,4 +20,9 @@ Feature: Authentication
         | USER  |
 
   Rule: Machine-to-machine authentication
+    Scenario: Service authentication with valid client credentials
+      Given I have valid client credentials
+      When I access a "internal"-protected resource
+      Then I should be granted access
+      
     

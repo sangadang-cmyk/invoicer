@@ -7,4 +7,5 @@ import java.util.List;
 public interface AccountQueryPort {
     boolean existsUserById(String userId);
     List<UserDto> listUsers();
+    List<UserDto> listUsers(String role);
 }

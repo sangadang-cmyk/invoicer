@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.UserNotFoundException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
+import tech.sangdang.invoicer.common.constants.AppSecurity;
 import tech.sangdang.invoicer.modules.account.domain.ports.AccountQueryPort;
 import tech.sangdang.invoicer.modules.system.SystemConfig;
 
@@ -45,6 +43,27 @@ public class AccountQueryPortImpl implements AccountQueryPort {
 
         try {
             var response = cognitoIdentityProviderClient.listUsers(request);
+            log.info("Found {} users", response.users().size());
+            return response.users().stream().map(user -> UserDto.builder()
+                            .sub(user.attributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))
+                            .email(user.attributes().stream().filter(i -> i.name().equals("email")).findFirst().map(AttributeType::value).orElse(null))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            log.error("Error listing users", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<UserDto> listUsers(String role) {
+        ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
+                .userPoolId(systemConfig.getUserPoolId())
+                .groupName(role)
+                .build();
+
+        try {
+            var response = cognitoIdentityProviderClient.listUsersInGroup(request);
             log.info("Found {} users", response.users().size());
             return response.users().stream().map(user -> UserDto.builder()
                             .sub(user.attributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))

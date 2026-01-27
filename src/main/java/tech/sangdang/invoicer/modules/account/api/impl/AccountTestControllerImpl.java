@@ -25,6 +25,11 @@ public class AccountTestControllerImpl implements AccountTestController {
     }
 
     @Override
+    public List<UserDto> listUsers(String role) {
+        return accountQueryPort.listUsers(role);
+    }
+
+    @Override
     public boolean existsAccountId(String accountId) {
         return accountQueryPort.existsUserById(accountId);
     }

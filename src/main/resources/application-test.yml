@@ -1,0 +1,64 @@
+system:
+  config:
+    deployment-version: LOCAL
+    auth-url: http://localhost.localstack.cloud:4566/_aws/cognito-idp
+    user-pool-id: ap-southeast-1_localpoolid
+
+logging:
+  level:
+    tech.sangdang.invoicer.config.AwsCognitoAdapterConfig: trace
+    software.amazon.awssdk.request: DEBUG
+
+spring:
+  application:
+    name: invoicer
+  web:
+    error:
+      include-message: always
+  cloud:
+    aws:
+      region:
+        static: ap-southeast-1
+      endpoint: http://localhost.localstack.cloud:4566
+      dynamodb:
+        endpoint: http://localhost.localstack.cloud:4566
+      credentials:
+        access-key: test
+        secret-key: test
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost.localstack.cloud:4566/ap-southeast-1_localpoolid}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+springdoc:
+  swagger-ui:
+    enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+    persist-authorization: true
+    filter: true
+    display-request-duration: on
+    syntax-highlight:
+      activated: true
+      theme: obsidian
+    doc-expansion: none
+    oauth:
+      client-id: ${SWAGGER_UI_OAUTH_CLIENT_ID:local-swagger-client-id}
+      client-secret: ${SWAGGER_UI_OAUTH_CLIENT_SECRET:secret}
+      scopes:
+        - email
+        - openid
+        - phone
+        - profile
+        - aws.cognito.signin.user.admin
+  api-docs:
+    enabled: true
+aws:
+  s3:
+    bucket-name: invoicer-inbound
+    default-presigned-upload-ttl-mins: 10

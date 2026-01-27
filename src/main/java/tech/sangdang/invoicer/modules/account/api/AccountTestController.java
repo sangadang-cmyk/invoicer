@@ -22,6 +22,11 @@ public interface AccountTestController {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @GetMapping("/batch/{role}")
+    default List<UserDto> listUsers(@PathVariable String role) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     @GetMapping("/{accountId}/exists")
     default boolean existsAccountId(@PathVariable String accountId) {
         throw new UnsupportedOperationException("Not supported yet.");

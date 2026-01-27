@@ -5,10 +5,15 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import tech.sangdang.cucumber.CucumberStepParent;
 import tech.sangdang.cucumber.ScenarioContext;
+import tech.sangdang.invoicer.common.constants.AppScopes;
+import tech.sangdang.invoicer.common.constants.AppSecurity;
+import tech.sangdang.invoicer.modules.account.domain.ports.AccountQueryPort;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -19,25 +24,50 @@ public class AuthenticationSteps extends CucumberStepParent {
     private ScenarioContext context;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private AppScopes scopes;
+    @Autowired
+    private AccountQueryPort accountQueryPort;
 
     @Given("I am not logged in")
     public void i_am_not_logged_in() {
         context.clearLoggedInSession();
     }
 
-    @Given("I am logged in as {string}")
-    public void i_am_logged_in_as(String userRole) {
-        String userId = "test-user-" + System.currentTimeMillis();
+    @Given("I am logged in as mock {string}")
+    public void i_am_logged_in_as_mock(String userRole) {
         context.setLoggedInSession(
-                getRoleJwt(userId, userRole.toUpperCase())
+                getRoleJwt("temp-user-id", userRole.toUpperCase())
         );
+    }
+    
+    @Given("I have valid client credentials")
+    public void i_have_valid_client_credentials() {
+        String systemId = "test-system-" + System.currentTimeMillis();
+        context.setLoggedInSession(
+                getScopeJwt(systemId, scopes.DEFAULT, scopes.INVOICE_WRITE_OWNED, scopes.INVOICE_READ_OWNED)
+        );
+    }
+    
+    @Given("I have a valid user ID")
+    public void i_have_a_valid_user_id() {
+        var accounts = accountQueryPort.listUsers(AppSecurity.Role.USER);
+        String userId = accounts.getFirst().getSub();
+        context.putData("userId", userId);
     }
 
     @When("I access a {string}-protected resource")
     public void i_access_a_protected_resource(String protectionLevel) throws Exception {
         var mvcResult = mockMvc.perform(
+//                get("/api/" + protectionLevel.toLowerCase() + "/test")
+//                        .with(jwt()
+//                                .jwt(builder -> builder
+//                                        .subject("test")
+//                                )
+//                                .authorities(new SimpleGrantedAuthority("SCOPE_invoicer-api/default"), new SimpleGrantedAuthority("SCOPE_invoicer-api"))
+//                        )
                 ensureAuth(
-                        get("/" + protectionLevel.toLowerCase() + "/test"),
+                        get("/api/" + protectionLevel.toLowerCase() + "/test"),
                         context.getLoggedInSession()
                 )
         ).andReturn();
@@ -46,8 +76,7 @@ public class AuthenticationSteps extends CucumberStepParent {
     }
 
     @Then("^I (should|shouldnt) be granted access")
-    public void i_be_granted_access(String accessOutcome) {
-        log.info("Resultant status: {}", context.getLatestApiResult().getResponse().getStatus());
+    public void i_be_granted_access(String accessOutcome) throws Exception {
         if (accessOutcome.equalsIgnoreCase("should")) {
             assertEquals("Expect 200", 200, context.getLatestApiResult().getResponse().getStatus());
             return;

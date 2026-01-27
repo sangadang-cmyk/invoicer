@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// make sure the context persists across singleton step definitions
 @Data
 @Component
-// make sure the context persists across singleton step definitions
 @ScenarioScope(proxyMode = ScopedProxyMode.TARGET_CLASS) 
 public class ScenarioContext {
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor loggedInSession;
