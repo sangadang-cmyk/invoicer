@@ -83,9 +83,14 @@ jobs:
           chmod +x ./mvnw
           ./mvnw test
 
-      - name: Print container logs
+      - name: Capture Docker logs
         if: failure()
-        run: docker logs $(docker ps -aq --filter ancestor=localstack/localstack-pro:latest)
+        run: |
+          mkdir -p logs
+          for container in $(docker ps -aq); do
+            docker logs $container > "logs/container-${container}.txt" 2>&1
+          done
+          docker ps -a > logs/containers-list.txt
 
       - name: Upload LocalStack logs
         if: failure()
@@ -95,6 +100,7 @@ jobs:
           path: |
             **/target/surefire-reports/
             **/*.log
+            logs/
           
 #      - name: Update cache with new docker images
 #        if: steps.download-docker-cache.outputs.cache-hit != 'true'

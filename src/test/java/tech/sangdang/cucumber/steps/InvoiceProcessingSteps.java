@@ -108,7 +108,7 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
         
         log.debug("Uploading file {} to URL {}", sampleFilePath, uploadUrl);
 
-        RestAssured
+        var response = RestAssured
                 .given()
                     .urlEncodingEnabled(false) // rest assured encodes URL by default. if this is enabled, the url is encoded twice :(
                     .header("Content-Type", "application/pdf")
@@ -119,7 +119,13 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
                     .put(uploadUrl)
                 .then()
                     .log().ifValidationFails()
-                    .statusCode(200);
+                    .statusCode(200)
+                .extract().response();
+        
+        log.debug("File upload response: {}", response);
+        
+        var objects = s3Template.listObjects("invoicer-inbound", "");
+        log.debug("Current objects in inbound bucket: {}", objects);
     }
     
     @Then("The invoice status should be updated to PENDING_VALIDATION within {int} seconds")
