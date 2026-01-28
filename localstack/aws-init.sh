@@ -146,6 +146,8 @@ awslocal lambda create-function \
 echo "[END] Create lambda for s3 bucket"
 
 echo "[START] Create S3 bucket notification to trigger lambda"
+echo "Wait for lambda to be active, then add notification listener"
+awslocal lambda wait function-active-v2 --function-name Invoicer-HandleS3Uploads
 awslocal s3api put-bucket-notification-configuration \
   --bucket invoicer-inbound \
   --notification-configuration '{

@@ -83,6 +83,7 @@ jobs:
           chmod +x ./mvnw
           ./mvnw test
 
+# 2>&1 means redirect stderr (file descriptor 2) to stdout (file descriptor 1), so both standard output and error messages are captured.
       - name: Capture Docker logs
         if: failure()
         run: |
