@@ -137,7 +137,7 @@ echo "S3 bucket creation finished"
 
 echo "[START] Create lambda for s3 bucket"
 awslocal lambda create-function \
-  --function-name Invoicer-HandleS3Uploads \
+  --function-name "Invoicer-HandleS3Uploads" \
   --runtime nodejs24.x \
   --role arn:aws:iam::000000000000:role/superman \
   --handler index.handler \
@@ -147,7 +147,7 @@ echo "[END] Create lambda for s3 bucket"
 
 echo "[START] Create S3 bucket notification to trigger lambda"
 echo "Wait for lambda to be active, then add notification listener"
-awslocal lambda wait function-active-v2 --function-name Invoicer-HandleS3Uploads
+awslocal lambda wait function-active-v2 --function-name "Invoicer-HandleS3Uploads" --region ${region}
 awslocal s3api put-bucket-notification-configuration \
   --bucket invoicer-inbound \
   --notification-configuration '{
