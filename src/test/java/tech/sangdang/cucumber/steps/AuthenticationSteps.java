@@ -1,5 +1,7 @@
 package tech.sangdang.cucumber.steps;
 
+import io.cucumber.java.PendingException;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -12,6 +14,8 @@ import tech.sangdang.cucumber.ScenarioContext;
 import tech.sangdang.invoicer.common.constants.AppScopes;
 import tech.sangdang.invoicer.common.constants.AppSecurity;
 import tech.sangdang.invoicer.modules.account.domain.ports.AccountQueryPort;
+
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
@@ -41,6 +45,14 @@ public class AuthenticationSteps extends CucumberStepParent {
         );
     }
     
+    @Given("I am logged in as role USER with the user ID I have")
+    public void i_am_logged_in_as() {
+        String userId = context.getData("userId");
+        context.setLoggedInSession(
+                getRoleJwt(userId, AppSecurity.Role.USER)
+        );
+    }
+    
     @Given("I have valid client credentials")
     public void i_have_valid_client_credentials() {
         String systemId = "test-system-" + System.currentTimeMillis();
@@ -56,16 +68,14 @@ public class AuthenticationSteps extends CucumberStepParent {
         context.putData("userId", userId);
     }
 
+    @And("I have an invalid user ID")
+    public void iHaveAnInvalidUserID() {
+        context.putData("userId", UUID.randomUUID().toString());
+    }
+
     @When("I access a {string}-protected resource")
     public void i_access_a_protected_resource(String protectionLevel) throws Exception {
         var mvcResult = mockMvc.perform(
-//                get("/api/" + protectionLevel.toLowerCase() + "/test")
-//                        .with(jwt()
-//                                .jwt(builder -> builder
-//                                        .subject("test")
-//                                )
-//                                .authorities(new SimpleGrantedAuthority("SCOPE_invoicer-api/default"), new SimpleGrantedAuthority("SCOPE_invoicer-api"))
-//                        )
                 ensureAuth(
                         get("/api/" + protectionLevel.toLowerCase() + "/test"),
                         context.getLoggedInSession()

@@ -9,6 +9,11 @@ public class InvoiceAccessDeniedError extends BusinessError {
         return HttpStatus.FORBIDDEN;
     }
 
+    @Override
+    public String getErrorCode() {
+        return InvoiceAccessDeniedError.class.getSimpleName().toUpperCase();
+    }
+
     public InvoiceAccessDeniedError() {
         super("Access to the requested invoice is denied.");
     }

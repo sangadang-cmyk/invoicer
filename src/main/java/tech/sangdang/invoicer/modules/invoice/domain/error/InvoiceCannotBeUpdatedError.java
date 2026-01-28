@@ -9,6 +9,11 @@ public class InvoiceCannotBeUpdatedError extends BusinessError {
         return HttpStatus.BAD_REQUEST;
     }
 
+    @Override
+    public String getErrorCode() {
+        return InvoiceCannotBeUpdatedError.class.getSimpleName().toUpperCase();
+    }
+
     public InvoiceCannotBeUpdatedError(String invoiceId) {
         super("Invoice with id=" + invoiceId + " cannot be updated in its current state.");
     }

@@ -3,13 +3,16 @@ system:
     deployment-version: LOCAL
     auth-url: http://localhost.localstack.cloud:4566/_aws/cognito-idp
     user-pool-id: ap-southeast-1_localpoolid
+    localstack-auth-token: ${LOCALSTACK_AUTH_TOKEN:null}
 
 logging:
   level:
     tech.sangdang.invoicer.config.AwsCognitoAdapterConfig: trace
-    software.amazon.awssdk.request: DEBUG
+    tech.sangdang.cucumber.steps.InvoiceProcessingSteps: debug
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: invoicer
   web:
@@ -19,9 +22,7 @@ spring:
     aws:
       region:
         static: ap-southeast-1
-      endpoint: http://localhost.localstack.cloud:4566
-      dynamodb:
-        endpoint: http://localhost.localstack.cloud:4566
+#        Endpoint managed by testcontainers LocalStack module
       credentials:
         access-key: test
         secret-key: test
@@ -47,15 +48,6 @@ springdoc:
       activated: true
       theme: obsidian
     doc-expansion: none
-    oauth:
-      client-id: ${SWAGGER_UI_OAUTH_CLIENT_ID:local-swagger-client-id}
-      client-secret: ${SWAGGER_UI_OAUTH_CLIENT_SECRET:secret}
-      scopes:
-        - email
-        - openid
-        - phone
-        - profile
-        - aws.cognito.signin.user.admin
   api-docs:
     enabled: true
 aws:

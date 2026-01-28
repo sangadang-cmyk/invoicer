@@ -9,6 +9,11 @@ public class InvoiceCannotBeDeletedError extends BusinessError {
         return HttpStatus.BAD_REQUEST;
     }
 
+    @Override
+    public String getErrorCode() {
+        return InvoiceCannotBeDeletedError.class.getSimpleName().toUpperCase();
+    }
+
     public InvoiceCannotBeDeletedError(String id) {
         super("Invoice with id=" + id + " cannot be deleted in its current state.");
     }

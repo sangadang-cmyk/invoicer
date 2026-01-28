@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Invoice {
     private String invoiceId;
     private String userId;
-    private InvoiceStatus status;
+    private String status;
     private String description;
     private Integer maxSizeInBytes;
     private Set<String> allowedTypes;
@@ -27,6 +27,14 @@ public class Invoice {
     @DynamoDbPartitionKey
     public String getInvoiceId() {
         return this.invoiceId;
+    }
+    
+    public void setStatus(InvoiceStatus status) {
+        this.status = status.name();
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public static Invoice ofDefault() {
@@ -63,14 +71,14 @@ public class Invoice {
     }
 
     public boolean canBeDeleted() {
-        return this.status == InvoiceStatus.AWAITING_UPLOAD;
+        return this.status.equals(InvoiceStatus.AWAITING_UPLOAD.name());
     }
 
     public boolean canBeStarted() {
-        return this.status == InvoiceStatus.AWAITING_UPLOAD;
+        return this.status.equals(InvoiceStatus.AWAITING_UPLOAD.name());
     }
 
     public boolean canBeUpdated() {
-        return this.status == InvoiceStatus.AWAITING_UPLOAD;
+        return this.status.equals(InvoiceStatus.AWAITING_UPLOAD.name());
     }
 }

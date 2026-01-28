@@ -77,6 +77,8 @@ jobs:
 #          docker load -i /tmp/test/docker-images/docker-images.tar || echo "No cached docker images to load."
 
       - name: Run Tests
+        env: 
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         run: |
           chmod +x ./mvnw
           ./mvnw test
@@ -98,7 +100,7 @@ jobs:
     name: Upload Docker Image to ECR
     runs-on: ubuntu-latest
     environment: production
-#    needs: test
+    needs: test
 
     permissions:
       id-token: write

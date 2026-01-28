@@ -1,5 +1,6 @@
 package tech.sangdang.invoicer.modules.system;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +17,7 @@ public class SystemConfig {
     
     @NotBlank
     private String userPoolId;
+    
+    @Nullable
+    private String localstackAuthToken;
 }

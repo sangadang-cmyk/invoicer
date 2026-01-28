@@ -27,8 +27,8 @@ public class AccountQueryPortImpl implements AccountQueryPort {
 
         try {
             var response = cognitoIdentityProviderClient.adminGetUser(request);
-            log.info("Cognito User: {}", response);
-            return true;
+            log.debug("Found user: {}", response);
+            return response != null;
         } catch (UserNotFoundException e) {
             return false;
         }
@@ -43,7 +43,7 @@ public class AccountQueryPortImpl implements AccountQueryPort {
 
         try {
             var response = cognitoIdentityProviderClient.listUsers(request);
-            log.info("Found {} users", response.users().size());
+            log.debug("Found {} users", response.users().size());
             return response.users().stream().map(user -> UserDto.builder()
                             .sub(user.attributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))
                             .email(user.attributes().stream().filter(i -> i.name().equals("email")).findFirst().map(AttributeType::value).orElse(null))
@@ -64,7 +64,7 @@ public class AccountQueryPortImpl implements AccountQueryPort {
 
         try {
             var response = cognitoIdentityProviderClient.listUsersInGroup(request);
-            log.info("Found {} users", response.users().size());
+            log.debug("Found {} users", response.users().size());
             return response.users().stream().map(user -> UserDto.builder()
                             .sub(user.attributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))
                             .email(user.attributes().stream().filter(i -> i.name().equals("email")).findFirst().map(AttributeType::value).orElse(null))
