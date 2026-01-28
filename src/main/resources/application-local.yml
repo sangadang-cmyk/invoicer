@@ -11,6 +11,10 @@ logging:
 spring:
   application:
     name: invoicer
+  boot:
+    admin:
+      client:
+        url: ${SPRING_BOOT_ADMIN_URL:http://localhost:1704}
   web:
     error:
       include-message: always
@@ -31,6 +35,9 @@ management:
     web:
       exposure:
         include: "*"
+  info:
+    env:
+      enabled: true
 springdoc:
   swagger-ui:
     enabled: true

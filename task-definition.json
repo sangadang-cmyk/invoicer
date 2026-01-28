@@ -44,12 +44,8 @@
           "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/S3_INBOUND_BUCKET_NAME" 
         },
         {
-          "name": "SWAGGER_UI_OAUTH_CLIENT_ID",
-          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SWAGGER_UI_OAUTH_CLIENT_ID"
-        },
-        {
-          "name": "SWAGGER_UI_OAUTH_CLIENT_SECRET",
-          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SWAGGER_UI_OAUTH_CLIENT_SECRET"
+          "name": "SPRING_BOOT_ADMIN_URL",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SPRING_BOOT_ADMIN_URL"
         }
       ]
     }
