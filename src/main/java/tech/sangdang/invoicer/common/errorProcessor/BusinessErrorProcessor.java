@@ -16,7 +16,7 @@ public class BusinessErrorProcessor {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(ex.getHttpStatus().value())
-                .error(ex.getHttpStatus().name())
+                .error(ex.getErrorCode())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();

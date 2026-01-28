@@ -37,6 +37,13 @@ public class ScenarioContext {
         return apiResults.getLast();
     }
     
+    public MvcResult getOldestApiResult() {
+        if (apiResults.isEmpty()) {
+            return null;
+        }
+        return apiResults.getFirst();
+    }
+    
     public MvcResult getApiResult(int index) {
         if (index < 0 || index >= apiResults.size()) {
             return null;

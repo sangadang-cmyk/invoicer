@@ -13,6 +13,7 @@ cognito_user_group_name="USER"
 cognito_admin_account_id="danganhsang09@gmail.com"
 cognito_user_account_id="danganhsang2003@gmail.com"
 cognito_account_password="Sang2003@"
+lambda_zip_path="/etc/localstack/init/ready.d/lambda/Invoicer-HandleS3Uploads.zip"
 
 echo "[START] Creating user pool"
 awslocal cognito-idp create-user-pool \
@@ -112,7 +113,50 @@ awslocal dynamodb create-table \
     --attribute-definitions AttributeName=invoiceId,AttributeType=S \
     --key-schema AttributeName=invoiceId,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-    --region ap-southeast-1
+    --region ${region}
 echo "Dynamodb table created"
+
+echo "Create S3 bucket: invoicer-inbound"
+awslocal s3api create-bucket --bucket invoicer-inbound --region ${region} --create-bucket-configuration LocationConstraint=ap-southeast-1
+awslocal s3api put-bucket-cors \
+  --bucket "invoicer-inbound" \
+  --cors-configuration '{
+    "CORSRules": [
+      {
+        "AllowedHeaders": ["*"],
+        "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+        "AllowedOrigins": ["*"],
+        "MaxAgeSeconds": 3000
+      }
+    ]
+  }' \
+  --region ${region}
+echo "Create S3 bucket: invoicer-permastore"
+awslocal s3api create-bucket --bucket invoicer-permastore --region ${region} --create-bucket-configuration LocationConstraint=ap-southeast-1
+echo "S3 bucket creation finished"
+
+echo "[START] Create lambda for s3 bucket"
+awslocal lambda create-function \
+  --function-name Invoicer-HandleS3Uploads \
+  --runtime nodejs24.x \
+  --role arn:aws:iam::000000000000:role/superman \
+  --handler index.handler \
+  --zip-file fileb://${lambda_zip_path} \
+  --region ${region}
+echo "[END] Create lambda for s3 bucket"
+
+echo "[START] Create S3 bucket notification to trigger lambda"
+awslocal s3api put-bucket-notification-configuration \
+  --bucket invoicer-inbound \
+  --notification-configuration '{
+                                  "LambdaFunctionConfigurations": [
+                                    {
+                                      "Id": "S3ProcessUpload",
+                                      "LambdaFunctionArn": "arn:aws:lambda:ap-southeast-1:000000000000:function:Invoicer-HandleS3Uploads",
+                                      "Events": ["s3:ObjectCreated:*"]
+                                    }
+                                  ]
+                                }'
+echo "[END] Create S3 bucket notification to trigger lambda"
 
 echo "INIT SCRIPT END"

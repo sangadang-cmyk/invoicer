@@ -1,19 +1,22 @@
-package tech.sangdang.invoicer.modules.account.infra.config;
+package tech.sangdang.invoicer.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.AwsRegionProvider;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClientBuilder;
 
 import java.net.URI;
 
+@Slf4j
 @Configuration
 public class CognitoConfig {
     @Value("${spring.cloud.aws.region.static}")
@@ -29,22 +32,15 @@ public class CognitoConfig {
     private String secretKey;
 
     @Bean
-    CognitoIdentityProviderClient cognitoIdentityProviderClient() {
+    @Profile("!test")
+    CognitoIdentityProviderClient cognitoIdentityProviderClient(
+            AwsCredentialsProvider credentialsProvider,
+            AwsRegionProvider regionProvider
+    ) {
+        log.debug("CognitoClient: Connecting to region: {}, endpoint: {}", regionProvider.getRegion(), endpoint);
         CognitoIdentityProviderClientBuilder builder = CognitoIdentityProviderClient.builder()
-                .region(Region.of(region));
-
-        // conditionally set credentials provider
-        if (StringUtils.hasText(accessKey) && StringUtils.hasText(secretKey)) {
-            builder.credentialsProvider(
-                    StaticCredentialsProvider.create(AwsBasicCredentials.builder()
-                            .accessKeyId(accessKey)
-                            .secretAccessKey(secretKey)
-                            .build()
-                    )
-            );
-        } else {
-            builder.credentialsProvider(DefaultCredentialsProvider.builder().build());
-        }
+                .credentialsProvider(credentialsProvider)
+                .region(regionProvider.getRegion());
 
         // if endpoint value is set in properties, then assign it here. else use default endpoint
         if (StringUtils.hasText(endpoint)) {

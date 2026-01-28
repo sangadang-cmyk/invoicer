@@ -12,7 +12,7 @@ import java.util.Set;
 public class InvoiceResponseDto {
     private String invoiceId;
     private String userId;
-    private InvoiceStatus status;
+    private String status;
     private String description;
     private Integer maxSizeInBytes;
     private Set<String> allowedTypes;

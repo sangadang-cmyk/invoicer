@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public abstract class BusinessError extends RuntimeException {
     public abstract HttpStatus getHttpStatus();
+    public abstract String getErrorCode();
 
     public BusinessError() {
     }

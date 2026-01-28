@@ -9,6 +9,11 @@ public class InvoiceCannotBeStartedError extends BusinessError {
         return HttpStatus.BAD_REQUEST;
     }
 
+    @Override
+    public String getErrorCode() {
+        return InvoiceCannotBeStartedError.class.getSimpleName().toUpperCase();
+    }
+
     public InvoiceCannotBeStartedError(String id) {
         super("Invoice with id=" + id + " cannot be started in its current state.");
     }

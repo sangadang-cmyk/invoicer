@@ -9,6 +9,11 @@ public class InvoiceNotFoundError extends BusinessError {
         return HttpStatus.NOT_FOUND;
     }
 
+    @Override
+    public String getErrorCode() {
+        return InvoiceNotFoundError.class.getSimpleName().toUpperCase();
+    }
+
     public InvoiceNotFoundError(String field, String value) {
         super("Invoice not found with " + field + "=" + value);
     }

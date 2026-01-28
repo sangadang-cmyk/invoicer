@@ -1,15 +1,16 @@
 package tech.sangdang.invoicer.common.core;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ErrorResponse {
     LocalDateTime timestamp;
-    int status;
+    Integer status;
     String error;
     String message;
     String path;
