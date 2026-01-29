@@ -8,8 +8,6 @@ public enum InvoiceAllowedTypes {
     APPLICATION_MSWORD,
     IMAGE_JPEG,
     IMAGE_PNG,
-    IMAGE_BMP,
-    IMAGE_GIF,
     TEXT_PLAIN;
 
     final String value;

@@ -26,6 +26,10 @@ spring:
       credentials:
         access-key: test
         secret-key: test
+  boot:
+    admin:
+      client:
+        enabled: false # Disabled for test environment
   security:
     oauth2:
       resourceserver:

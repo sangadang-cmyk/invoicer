@@ -11,10 +11,6 @@ logging:
 spring:
   application:
     name: invoicer
-  boot:
-    admin:
-      client:
-        url: ${SPRING_BOOT_ADMIN_URL:http://localhost:1704}
   web:
     error:
       include-message: always
@@ -25,6 +21,10 @@ spring:
       endpoint: http://localhost.localstack.cloud:4566
       dynamodb:
         endpoint: http://localhost.localstack.cloud:4566
+  boot:
+    admin:
+      client:
+        enabled: false # Disabled for local development
   security:
     oauth2:
       resourceserver:
