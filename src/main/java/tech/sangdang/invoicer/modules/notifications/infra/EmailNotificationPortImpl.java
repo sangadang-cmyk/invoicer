@@ -32,7 +32,7 @@ public class EmailNotificationPortImpl implements EmailNotificationPort {
                     .protocol("email")
                     .endpoint(email)
                     .topicArn(systemConfig.getSnsTopicArn())
-                    .attributes(Map.of("FilterPolicy", filterPolicy, "AuthenticateOnUnsubscribe", "true"))
+                    .attributes(Map.of("FilterPolicy", filterPolicy))
             );
 
             log.debug("Subscribed email {} to SNS topic {}", email, systemConfig.getSnsTopicArn());
