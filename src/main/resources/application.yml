@@ -8,6 +8,7 @@ system:
 logging:
   level:
     tech.sangdang.invoicer.config.AwsCognitoAdapterConfig: trace
+    tech.sangdang.invoicer.modules.notifications.infra.EmailNotificationPortImpl: debug
 
 spring:
   application:

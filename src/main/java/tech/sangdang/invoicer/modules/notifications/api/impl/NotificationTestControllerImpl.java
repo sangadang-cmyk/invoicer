@@ -3,6 +3,7 @@ package tech.sangdang.invoicer.modules.notifications.api.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tech.sangdang.invoicer.modules.notifications.api.NotificationTestController;
 import tech.sangdang.invoicer.modules.notifications.domain.ports.EmailNotificationPort;
@@ -15,7 +16,7 @@ public class NotificationTestControllerImpl implements NotificationTestControlle
     private final EmailNotificationPort emailNotificationPort;
     
     @Override
-    public void sendTestEmailNotification() {
-        emailNotificationPort.sendEmail("Test Email", "This is a test email from Invoicer application.");
+    public void sendTestEmailNotification(@RequestParam String recipientEmail) {
+        emailNotificationPort.sendEmail("Test Email", "This is a test email from Invoicer application.", recipientEmail);
     }
 }
