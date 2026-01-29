@@ -35,12 +35,17 @@ public class AccountQueryPortImpl implements AccountQueryPort {
                 .userPoolId(systemConfig.getUserPoolId())
                 .build();
 
-        var response = cognitoIdentityProviderClient.adminGetUser(request);
-        log.debug("Found user: {}", response);
-        return Optional.of(UserDto.builder()
-                .sub(response.userAttributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))
-                .email(response.userAttributes().stream().filter(i -> i.name().equals("email")).findFirst().map(AttributeType::value).orElse(null))
-                .build());
+        try {
+            var response = cognitoIdentityProviderClient.adminGetUser(request);
+            log.debug("Found user: {}", response);
+            return Optional.of(UserDto.builder()
+                    .sub(response.userAttributes().stream().filter(i -> i.name().equals("sub")).findFirst().map(AttributeType::value).orElse(null))
+                    .email(response.userAttributes().stream().filter(i -> i.name().equals("email")).findFirst().map(AttributeType::value).orElse(null))
+                    .build());
+        } catch(UserNotFoundException e) {
+            log.error("User not found: {}", userId, e);
+            return Optional.empty();
+        }
     }
 
     @Override
