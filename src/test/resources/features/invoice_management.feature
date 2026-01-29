@@ -1,3 +1,4 @@
+@unit
 Feature: Invoice Management
 Background: 
   Given I have valid client credentials

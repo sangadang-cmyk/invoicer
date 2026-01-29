@@ -6,6 +6,7 @@ Feature: Invoice Processing
     And I have a sample file "sample_upload.pdf"
     
   Rule: As a user, I can start processing an invoice
+    @integration
     Scenario: Start processing successfully
       Given I am logged in as role USER with the user ID I have
       When I start processing the invoice I created before

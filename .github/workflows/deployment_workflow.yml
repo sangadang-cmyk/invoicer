@@ -46,7 +46,6 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    #    needs: build-frontend
     environment: production
 
     steps:
@@ -59,31 +58,15 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
-       
-#      ENABLE THIS WHEN PERFORMANCE IS TOO BAD. CURRENTLY, WHEN CACHING IS ENABLED, IT INCREASES TIME BY 50%????  
-#      
-#      - name: Download cached docker images
-#        id: download-docker-cache
-#        uses: actions/cache@v4
-#        with:
-#          path: '/tmp/test/docker-images'
-#          key: ${{ runner.os }}-docker-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: ${{ runner.os }}-docker-
-#      
-#      - name: Load cached docker images to docker
-#        if: steps.download-docker-cache.outputs.cache-hit == 'true'
-#        run: |
-#          echo "Loading cached docker images..."
-#          docker load -i /tmp/test/docker-images/docker-images.tar || echo "No cached docker images to load."
-
+      
       - name: Run Tests
-        env: 
+        env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         run: |
           chmod +x ./mvnw
           ./mvnw test
-
-# 2>&1 means redirect stderr (file descriptor 2) to stdout (file descriptor 1), so both standard output and error messages are captured.
+      
+      # 2>&1 means redirect stderr (file descriptor 2) to stdout (file descriptor 1), so both standard output and error messages are captured.
       - name: Capture Docker logs
         if: failure()
         run: |
@@ -102,25 +85,12 @@ jobs:
             **/target/surefire-reports/
             **/*.log
             logs/
-          
-#      - name: Update cache with new docker images
-#        if: steps.download-docker-cache.outputs.cache-hit != 'true'
-#        run: |
-#          mkdir -p /tmp/test/docker-images
-#          # Filter for actual images to avoid saving 'none' or intermediate layers
-#          docker save $(docker images -q) -o /tmp/test/docker-images/docker-images.tar
-#      - name: Explicit Cache Save
-#        if: steps.download-docker-cache.outputs.cache-hit != 'true'
-#        uses: actions/cache/save@v4
-#        with:
-#          path: /tmp/test/docker-images
-#          key: ${{ steps.download-docker-cache.outputs.cache-primary-key }}
 
   upload-image:
     name: Upload Docker Image to ECR
     runs-on: ubuntu-latest
     environment: production
-    needs: test
+    needs: [test, build-frontend]
 
     permissions:
       id-token: write
@@ -132,7 +102,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        
+
       - name: Download Frontend Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -155,7 +125,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
-        
+
       - name: Update version in application.yml
         run: |
           echo "Updating deployment version in application.yml"

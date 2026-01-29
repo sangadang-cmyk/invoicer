@@ -1,3 +1,4 @@
+@unit
 Feature: Authentication
   Rule: User Authentication
     Scenario Outline: Not-logged-in user tries to access protected resource

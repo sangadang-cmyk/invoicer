@@ -1,3 +1,4 @@
+@debug
 Feature: Infrastructure Tests
   Scenario: Test
     When I run infrastructure tests

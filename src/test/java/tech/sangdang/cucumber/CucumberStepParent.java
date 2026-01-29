@@ -2,6 +2,7 @@ package tech.sangdang.cucumber;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -19,6 +20,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.StringUtils;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -48,7 +50,7 @@ import java.util.List;
 @CucumberContextConfiguration
 @ContextConfiguration(classes = {ScenarioContext.class, LocalstackConfig.class})
 @SpringBootTest(
-        classes = {InvoicerApplication.class}, 
+        classes = {InvoicerApplication.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class CucumberStepParent {
@@ -56,8 +58,9 @@ public class CucumberStepParent {
     public static final LocalStackContainer localStackContainer =
             new LocalStackContainer(DockerImageName.parse("localstack/localstack-pro:latest"))
                     .withServices("s3", "dynamodb", "cognito-idp", "lambda")
-                    .withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"))
-                    .withReuse(true)
+                    .withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN")) // token stored in system environment variables
+                    .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers")).withPrefix("localstack")) // livestream container logs
+                    .withReuse(false)
                     // copy the entire localstack folder (which contains init scripts) into the container
                     .withCopyFileToContainer(
                             MountableFile.forHostPath("localstack", 777),
@@ -79,7 +82,7 @@ public class CucumberStepParent {
      * This runs after the localstack container is started and configures properties in application.yml
      * Why here and not hard-code? Because the endpoint URL is dynamic and may change
      * Note 1: We only need to configure the endpoint. The others can be static as per application.yml (region, access key, secret key - localstack doesn't care about these)
-     * Note 2: This only configures spring cloud aws. It doesn't configure the cognito client. 
+     * Note 2: This only configures spring cloud aws. It doesn't configure the cognito client.
      */
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) {
@@ -92,7 +95,7 @@ public class CucumberStepParent {
         registry.add("spring.cloud.aws.credentials.access-key", localStackContainer::getAccessKey);
         registry.add("spring.cloud.aws.credentials.secret-key", localStackContainer::getSecretKey);
     }
-    
+
     public SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor getRoleJwt(
             String userId,
             String... roles
@@ -110,7 +113,7 @@ public class CucumberStepParent {
                 )
                 .authorities(authorities);
     }
-    
+
     public SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor getScopeJwt(
             String sub,
             String... selectedScopes
@@ -128,7 +131,7 @@ public class CucumberStepParent {
                 )
                 .authorities(authorities);
     }
-    
+
     public static MockHttpServletRequestBuilder ensureAuth(
             MockHttpServletRequestBuilder requestBuilder,
             SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor auth
@@ -139,7 +142,7 @@ public class CucumberStepParent {
             return requestBuilder;
         }
     }
-    
+
     public <T> T parseBodyFromResponse(MvcResult response, Class<T> clazz) throws UnsupportedEncodingException {
         var rawResponseBody = response.getResponse().getContentAsString();
         return objectMapper.readValue(rawResponseBody, clazz);
