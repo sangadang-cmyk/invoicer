@@ -57,7 +57,7 @@ public class CucumberStepParent {
 
     public static final LocalStackContainer localStackContainer =
             new LocalStackContainer(DockerImageName.parse("localstack/localstack-pro:latest"))
-                    .withServices("s3", "dynamodb", "cognito-idp", "lambda")
+                    .withServices("s3", "dynamodb", "cognito-idp", "lambda", "sns", "ses")
                     .withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN")) // token stored in system environment variables
                     .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers")).withPrefix("localstack")) // livestream container logs
                     .withReuse(false)

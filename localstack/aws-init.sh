@@ -161,4 +161,8 @@ awslocal s3api put-bucket-notification-configuration \
                                 }'
 echo "[END] Create S3 bucket notification to trigger lambda"
 
+echo "[START] Create SNS topic for invoice notifications"
+awslocal sns create-topic --name invoicer-sns-topic --region ${region}
+echo "[END] Create SNS topic for invoice notifications"
+
 echo "INIT SCRIPT END"

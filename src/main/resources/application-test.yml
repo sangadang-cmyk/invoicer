@@ -4,6 +4,7 @@ system:
     auth-url: http://localhost.localstack.cloud:4566/_aws/cognito-idp
     user-pool-id: ap-southeast-1_localpoolid
     localstack-auth-token: ${LOCALSTACK_AUTH_TOKEN:null}
+    sns-topic-arn: arn:aws:sns:ap-southeast-1:000000000000:invoicer-sns-topic
 
 logging:
   level:

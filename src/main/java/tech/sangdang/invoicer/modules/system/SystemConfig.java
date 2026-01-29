@@ -20,4 +20,7 @@ public class SystemConfig {
     
     @Nullable
     private String localstackAuthToken;
+    
+    @NotBlank
+    private String snsTopicArn;
 }

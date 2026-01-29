@@ -3,6 +3,7 @@ system:
     deployment-version: LOCAL
     auth-url: https://auth.sangdang.tech
     user-pool-id: ap-southeast-1_4OQTgCgSd
+    sns-topic-arn: arn:aws:sns:ap-southeast-1:315326805283:invoicer-sns-topic
 
 logging:
   level:
