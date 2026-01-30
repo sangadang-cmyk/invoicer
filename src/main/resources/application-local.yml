@@ -56,4 +56,6 @@ springdoc:
 aws:
   s3:
     bucket-name: invoicer-inbound
+    permastore-bucket-name: invoicer-permastore
     default-presigned-upload-ttl-mins: 10
+    default-presigned-download-ttl-mins: 10

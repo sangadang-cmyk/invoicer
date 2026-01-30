@@ -24,4 +24,13 @@ public class FileUploadPortImpl implements FileUploadPort {
                 Duration.ofMinutes(s3Config.getDefaultPresignedUploadTtlMins())
         ).toExternalForm();
     }
+
+    @Override
+    public String getDownloadUrl(Invoice invoice) {
+        return s3Template.createSignedGetURL(
+                s3Config.getPermastoreBucketName(),
+                invoice.getInvoiceId(),
+                Duration.ofMinutes(s3Config.getDefaultPresignedDownloadTtlMins())
+        ).toExternalForm();
+    }
 }

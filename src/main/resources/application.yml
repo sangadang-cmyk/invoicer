@@ -35,7 +35,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: '*'
 springdoc:
   swagger-ui:
     enabled: true
@@ -43,7 +43,7 @@ springdoc:
     tags-sorter: alpha
     persist-authorization: true
     filter: true
-    display-request-duration: on
+    display-request-duration: 'on'
     syntax-highlight:
       activated: true
       theme: obsidian
@@ -53,4 +53,6 @@ springdoc:
 aws:
   s3:
     bucket-name: invoicer-inbound
+    permastore-bucket-name: invoicer-permastore
     default-presigned-upload-ttl-mins: 10
+    default-presigned-download-ttl-mins: 10

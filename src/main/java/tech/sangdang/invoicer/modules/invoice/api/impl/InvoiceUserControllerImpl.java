@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.sangdang.invoicer.modules.invoice.api.InvoiceUserController;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetAllInvoicesByUserIdQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetInvoiceByIdAndUserIdQuery;
+import tech.sangdang.invoicer.modules.invoice.app.dto.req.GetPresignedDownloadUrlQuery;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.StartImageUploadInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.ImageUploadAttemptDto;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
+import tech.sangdang.invoicer.modules.invoice.app.dto.res.PresignedDownloadUrlDto;
 import tech.sangdang.invoicer.modules.invoice.app.service.InvoiceProcessingService;
 import tech.sangdang.invoicer.modules.invoice.app.service.InvoiceQueryService;
 
@@ -42,6 +44,14 @@ public class InvoiceUserControllerImpl implements InvoiceUserController {
     @Override
     public ImageUploadAttemptDto startProcessingInvoice(String invoiceId, StartImageUploadInvoiceCommand command, Jwt principal) {
         return invoiceProcessingService.startImageUploadInvoice(command.toBuilder()
+                .invoiceId(invoiceId)
+                .userId(principal.getSubject())
+                .build());
+    }
+
+    @Override
+    public PresignedDownloadUrlDto getPresignedDownloadUrl(String invoiceId, Jwt principal) {
+        return invoiceProcessingService.getPresignedDownloadUrl(GetPresignedDownloadUrlQuery.builder()
                 .invoiceId(invoiceId)
                 .userId(principal.getSubject())
                 .build());

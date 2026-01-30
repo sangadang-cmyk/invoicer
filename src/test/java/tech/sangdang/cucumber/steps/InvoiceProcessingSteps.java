@@ -104,7 +104,9 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
         String uploadUrl = context.getData("presignedUploadUrl");
 
         File fileToUpload = new File(sampleFilePath);
+        assertNotNull("Presigned upload URL exists", uploadUrl);
         assertTrue("File exists", fileToUpload.exists());
+        assertNotNull("Sample file path exists", sampleFilePath);
         
         log.debug("Uploading file {} to URL {}", sampleFilePath, uploadUrl);
 
@@ -181,5 +183,42 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
         var existsObject = s3Template.objectExists("invoicer-permastore", invoiceId);
         
         assertTrue("Processed S3 object should exist for invoice " + invoiceId, existsObject);
+    }
+    
+    @When("I request a presigned download URL for the invoice I created before")
+    public void iRequestAPresignedDownloadURLForTheInvoiceICreatedBefore() throws Exception {
+        var invoiceCreationResponse = context.getOldestApiResult();
+        var invoiceId = objectMapper
+                .readValue(
+                        invoiceCreationResponse.getResponse().getContentAsString(),
+                        InvoiceResponseDto.class
+                )
+                .getInvoiceId();
+        
+        log.debug("Requesting presigned download URL for invoice {}", invoiceId);
+
+        var response = mockMvc.perform(ensureAuth(
+                get("/api/user/invoice/{invoiceId}/download", invoiceId),
+                context.getLoggedInSession()
+        )).andReturn();
+
+        context.addApiResult(response);
+    }
+    
+    @Then("I should receive a valid presigned download URL")
+    public void iShouldReceiveAValidPresignedDownloadURL() throws Exception {
+        var result = context.getLatestApiResult();
+        assertEquals(
+                "Expected HTTP status 200 OK",
+                200,
+                result.getResponse().getStatus()
+        );
+
+        var responseBody = super.parseBodyFromResponse(result, tech.sangdang.invoicer.modules.invoice.app.dto.res.PresignedDownloadUrlDto.class);
+
+        assertNotNull("Response should not be null", responseBody);
+        assertNotNull("Download URL should not be null", responseBody.getDownloadUrl());
+        assertTrue("Download URL should contain the bucket name", responseBody.getDownloadUrl().contains("invoicer-permastore"));
+        log.debug("Received presigned download URL: {}", responseBody.getDownloadUrl());
     }
 }

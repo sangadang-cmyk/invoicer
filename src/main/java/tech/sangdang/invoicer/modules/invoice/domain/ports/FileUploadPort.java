@@ -4,4 +4,5 @@ import tech.sangdang.invoicer.modules.invoice.domain.Invoice;
 
 public interface FileUploadPort {
     String uploadFile(Invoice invoice);
+    String getDownloadUrl(Invoice invoice);
 }

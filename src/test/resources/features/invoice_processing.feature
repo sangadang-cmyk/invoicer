@@ -14,3 +14,5 @@ Feature: Invoice Processing
       When I upload the sample file to the presigned URL
       Then The invoice status should be updated to PENDING_VALIDATION within 10 seconds
       And There should exist a new item in the processed bucket
+      When I request a presigned download URL for the invoice I created before
+      Then I should receive a valid presigned download URL

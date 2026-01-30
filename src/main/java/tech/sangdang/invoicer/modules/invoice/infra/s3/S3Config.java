@@ -14,11 +14,19 @@ public class S3Config {
     @NotBlank
     private String bucketName;
     @NotBlank
+    private String permastoreBucketName;
+    @NotBlank
     private String defaultPresignedUploadTtlMins;
+    @NotBlank
+    private String defaultPresignedDownloadTtlMins;
     private String inboundFolder;
 
     public int getDefaultPresignedUploadTtlMins() {
         return Integer.parseInt(defaultPresignedUploadTtlMins);
+    }
+    
+    public int getDefaultPresignedDownloadTtlMins() {
+        return Integer.parseInt(defaultPresignedDownloadTtlMins);
     }
     
     public String getInboundFolder() {

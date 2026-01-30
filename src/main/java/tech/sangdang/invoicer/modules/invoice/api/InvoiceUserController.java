@@ -13,6 +13,7 @@ import tech.sangdang.invoicer.common.constants.AppSecurity;
 import tech.sangdang.invoicer.modules.invoice.app.dto.req.StartImageUploadInvoiceCommand;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.ImageUploadAttemptDto;
 import tech.sangdang.invoicer.modules.invoice.app.dto.res.InvoiceResponseDto;
+import tech.sangdang.invoicer.modules.invoice.app.dto.res.PresignedDownloadUrlDto;
 
 import java.util.List;
 
@@ -32,4 +33,8 @@ public interface InvoiceUserController {
     @Operation(summary = "[user] Start processing an invoice")
     @PutMapping("/{invoiceId}/start")
     ImageUploadAttemptDto startProcessingInvoice(@PathVariable String invoiceId, @RequestBody StartImageUploadInvoiceCommand command, @AuthenticationPrincipal Jwt principal);
+    
+    @Operation(summary = "[user] Get presigned download URL for an invoice")
+    @GetMapping("/{invoiceId}/download")
+    PresignedDownloadUrlDto getPresignedDownloadUrl(@PathVariable String invoiceId, @AuthenticationPrincipal Jwt principal);
 }

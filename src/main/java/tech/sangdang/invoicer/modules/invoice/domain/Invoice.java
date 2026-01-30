@@ -81,4 +81,8 @@ public class Invoice {
     public boolean canBeUpdated() {
         return this.status.equals(InvoiceStatus.AWAITING_UPLOAD.name());
     }
+    
+    public boolean isAvailableForDownload() {
+        return this.status.equals(InvoiceStatus.PENDING_VALIDATION.name());
+    }
 }
