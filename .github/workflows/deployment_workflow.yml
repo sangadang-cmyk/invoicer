@@ -221,3 +221,37 @@ jobs:
           service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+      - name: Verify Deployment Success
+        run: |
+          # 1. Capture both the Expected ARN and the Rollout State
+          EXPECTED_TASK_DEF="${{ steps.task-def.outputs.task-definition-arn }}"
+          
+          # We query the PRIMARY deployment specifically
+          DEPLOYMENT_DATA=$(aws ecs describe-services \
+            --cluster ${{ vars.ECS_CLUSTER }} \
+            --services ${{ vars.ECS_SERVICE }} \
+            --query 'services[0].deployments[?status==`PRIMARY`][taskDefinition, rolloutState]' \
+            --output text)
+          
+          ACTUAL_TASK_DEF=$(echo $DEPLOYMENT_DATA | awk '{print $1}')
+          ROLLOUT_STATUS=$(echo $DEPLOYMENT_DATA | awk '{print $2}')
+          
+          echo "Expected Task Def: $EXPECTED_TASK_DEF"
+          echo "Current Task Def:  $ACTUAL_TASK_DEF"
+          echo "Rollout Status:    $ROLLOUT_STATUS"
+          
+          # 2. Check for Rollback (ARN Mismatch)
+          if [ "$EXPECTED_TASK_DEF" != "$ACTUAL_TASK_DEF" ]; then
+            echo "::error::Deployment rolled back! ECS reverted to a previous version."
+            exit 1
+          fi
+          
+          # 3. Check for Circuit Breaker Failure (Rollout State)
+          # Even if the ARNs match, a 'FAILED' rollout state means it's not actually healthy
+          if [ "$ROLLOUT_STATUS" == "FAILED" ]; then
+            echo "::error::Circuit Breaker triggered! Deployment is marked as FAILED."
+            exit 1
+          fi
+          
+          echo "Deployment verified successfully."
