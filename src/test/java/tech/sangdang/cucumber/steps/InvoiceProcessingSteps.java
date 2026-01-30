@@ -113,7 +113,7 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
         var response = RestAssured
                 .given()
                     .urlEncodingEnabled(false) // rest assured encodes URL by default. if this is enabled, the url is encoded twice :(
-                    .header("Content-Type", "application/pdf")
+                    .header("Content-Type", Files.probeContentType(fileToUpload.toPath()))
                     .header("Host", "localhost.localstack.cloud")
                     .body(fileToUpload)
                     .log().all()
@@ -130,8 +130,8 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
         log.debug("Current objects in inbound bucket: {}", objects);
     }
     
-    @Then("The invoice status should be updated to PENDING_VALIDATION within {int} seconds")
-    public void theInvoiceStatusShouldBeUpdatedToPENDING_VALIDATION(int seconds) throws Exception {
+    @Then("The invoice status should be updated to {string} within {int} seconds")
+    public void theInvoiceStatusShouldBeUpdatedToPENDING_VALIDATION(String status, int seconds) throws Exception {
         var invoiceCreationResponse = context.getOldestApiResult();
         var invoiceId = objectMapper
                 .readValue(
@@ -165,7 +165,7 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
                         return false;
                     }
 
-                    assertEquals("Invoice status should be PENDING_VALIDATION", InvoiceStatus.PENDING_VALIDATION.name(), invoiceDetails.getStatus());
+                    assertEquals("Invoice status should be correct", status, invoiceDetails.getStatus());
                     return true;
                 });
     }
@@ -206,7 +206,7 @@ public class InvoiceProcessingSteps extends CucumberStepParent {
     }
     
     @Then("I should receive a valid presigned download URL")
-    public void iShouldReceiveAValidPresignedDownloadURL() throws Exception {
+    public void iSholdReceiveAValidPresignedDownloadURL() throws Exception {
         var result = context.getLatestApiResult();
         assertEquals(
                 "Expected HTTP status 200 OK",

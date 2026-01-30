@@ -60,7 +60,7 @@ public class CucumberStepParent {
                     .withServices("s3", "dynamodb", "cognito-idp", "lambda", "sns", "ses")
                     .withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN")) // token stored in system environment variables
                     .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers")).withPrefix("localstack")) // livestream container logs
-                    .withReuse(false)
+                    .withReuse(true)
                     // copy the entire localstack folder (which contains init scripts) into the container
                     .withCopyFileToContainer(
                             MountableFile.forHostPath("localstack", 777),
