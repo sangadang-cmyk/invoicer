@@ -83,7 +83,10 @@
             const response = await fetch(finalUrl, {
                 method: 'PUT',
                 body: file,
-                headers: { 'Content-Type': "application/pdf", "Host": "localhost.localstack.cloud" }
+                headers: { 
+                    'Content-Type': file.type
+                    , "Host": "localhost.localstack.cloud" 
+                }
             });
 
             if (response.ok) {
