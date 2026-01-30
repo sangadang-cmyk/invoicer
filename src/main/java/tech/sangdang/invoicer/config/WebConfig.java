@@ -13,6 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(RestController.class));
     }
+    
+    // TEST LINE
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
