@@ -115,7 +115,7 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 sync src/test/resources/hurl/*.hurl s3://${{ vars.HURL_S3_BUCKET }}/ \
+          aws s3 sync src/test/resources/hurl s3://${{ vars.HURL_S3_BUCKET }}/ \
             --delete \
             --exact-timestamps
 
@@ -123,7 +123,7 @@ jobs:
     name: Upload Docker Image to ECR
     runs-on: ubuntu-latest
     environment: production
-    needs: [test, build-frontend]
+    needs: [test, build-frontend, package-hurl]
 
     permissions:
       id-token: write
