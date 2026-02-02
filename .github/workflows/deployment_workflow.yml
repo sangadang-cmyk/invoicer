@@ -58,7 +58,7 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
-      
+
       - name: Run Tests
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
@@ -123,7 +123,7 @@ jobs:
     name: Upload Docker Image to ECR
     runs-on: ubuntu-latest
     environment: production
-    needs: [test, build-frontend, package-hurl]
+    needs: [ test, build-frontend, package-hurl ]
 
     permissions:
       id-token: write
@@ -215,4 +215,36 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          wait-for-service-stability: false
+
+      - name: Get deployment ID
+        run: |
+          DEPLOYMENT_ID=$(aws ecs describe-services \
+              --cluster ${{ vars.ECS_CLUSTER }} \
+              --services ${{ vars.ECS_SERVICE }} \
+              --query "services[0].deployments[?status=='PRIMARY'].id" \
+              --output text)
+          echo "deployment_id=$DEPLOYMENT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for service stability
+        run: |
+          echo "Waiting for ECS service to stabilize..."
+          aws ecs wait services-stable \
+              --cluster ${{ vars.ECS_CLUSTER }} \
+              --services ${{ vars.ECS_SERVICE }}
+          echo "ECS service is stable now."
+
+      - name: Check deployment status. Fail if rollback
+        run: |
+          FINAL_STATUS=$(aws ecs list-service-deployments \
+            --service invoicer-task-def-service-manual \
+            --cluster default-serverless \
+            --max-results=1 \
+            --query="serviceDeployments[0].status")
+          echo "Final deployment status: $FINAL_STATUS"
+          if [ "$FINAL_STATUS" != "PRIMARY" ]; then
+              echo "Deployment failed or rolled back. Failing the job."
+              exit 1
+          fi
+          
+          
