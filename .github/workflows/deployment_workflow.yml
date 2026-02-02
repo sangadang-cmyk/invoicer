@@ -235,7 +235,7 @@ jobs:
             --descending \
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
-            --output text)
+            --output text | xargs)
           
           echo "DEBUG: TEST_LOG_STREAM value: '$TEST_LOG_STREAM'"
           echo "DEBUG: TEST_LOG_STREAM length: ${#TEST_LOG_STREAM}"
@@ -258,7 +258,7 @@ jobs:
             --descending \
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
-            --output text)
+            --output text | xargs)
 
           if [ "$PRODUCTION_LOG_STREAM" != "None" ] && [ -n "$PRODUCTION_LOG_STREAM" ]; then
             echo "::group::Lambda Log Events: Production Transfer. Log Stream: $PRODUCTION_LOG_STREAM"
