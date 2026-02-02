@@ -236,12 +236,17 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text)
-
+          
+          echo "DEBUG: TEST_LOG_STREAM value: '$TEST_LOG_STREAM'"
+          echo "DEBUG: TEST_LOG_STREAM length: ${#TEST_LOG_STREAM}"
+      
           if [ "$TEST_LOG_STREAM" != "None" ] && [ -n "$TEST_LOG_STREAM" ]; then
             echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM"
+            set -x  # Show exact command being run
             aws logs get-log-events \
               --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
               --log-stream-name "$TEST_LOG_STREAM" | tee lambda-logs/test-transfer-log-events.json
+            set +x
             echo "::endgroup::"
           else
             echo "No test transfer logs found"
