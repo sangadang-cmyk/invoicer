@@ -260,6 +260,12 @@ jobs:
             --max-results=1 \
             --query="serviceDeployments[0].status" \
             --output text)
+          
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to fetch deployment status from AWS."
+            exit 1
+          fi
+          
           echo "Final deployment status: $FINAL_STATUS"
           if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
               echo "Deployment failed or rolled back. Failing the job."
