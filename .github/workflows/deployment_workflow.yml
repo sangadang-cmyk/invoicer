@@ -217,16 +217,7 @@ jobs:
           cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: false
 
-      - name: Get deployment ID
-        run: |
-          DEPLOYMENT_ID=$(aws ecs describe-services \
-              --cluster ${{ vars.ECS_CLUSTER }} \
-              --services ${{ vars.ECS_SERVICE }} \
-              --query "services[0].deployments[?status=='PRIMARY'].id" \
-              --output text)
-          echo "deployment_id=$DEPLOYMENT_ID" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for service stability
+      - name: Wait for service stability 
         run: |
           echo "Waiting for ECS service to stabilize..."
           aws ecs wait services-stable \
@@ -242,7 +233,7 @@ jobs:
             --max-results=1 \
             --query="serviceDeployments[0].status")
           echo "Final deployment status: $FINAL_STATUS"
-          if [ "$FINAL_STATUS" != "PRIMARY" ]; then
+          if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
               echo "Deployment failed or rolled back. Failing the job."
               exit 1
           fi
