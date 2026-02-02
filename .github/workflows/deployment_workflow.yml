@@ -234,7 +234,7 @@ jobs:
             --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
             --order-by "LastEventTime" \
             --descending \
-            --max-items 1 > tee lambda-logs/test-transfer-log.json
+            --max-items 1 | tee lambda-logs/test-transfer-log.json
           echo "::endgroup::"
           
           echo "::group::Lambda Log Stream: Production Transfer"
@@ -242,7 +242,7 @@ jobs:
             --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostProductionTransfer" \
             --order-by "LastEventTime" \
             --descending \
-            --max-items 1 > tee lambda-logs/production-transfer-log.json
+            --max-items 1 | tee lambda-logs/production-transfer-log.json
           echo "::endgroup::"
           
       - name: Upload ECS lambda logs
