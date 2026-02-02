@@ -1,5 +1,5 @@
 GET {{host}}/actuator/health
-x-deployment-target: test
+x-deployment-target: {{deploymentTarget}}
 HTTP 200
 
 [Asserts]
