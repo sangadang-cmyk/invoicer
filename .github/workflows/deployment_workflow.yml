@@ -228,10 +228,11 @@ jobs:
       - name: Check deployment status. Fail if rollback
         run: |
           FINAL_STATUS=$(aws ecs list-service-deployments \
-            --service invoicer-task-def-service-manual \
-            --cluster default-serverless \
+            --service ${{ vars.ECS_SERVICE }} \
+            --cluster ${{ vars.ECS_CLUSTER }} \
             --max-results=1 \
-            --query="serviceDeployments[0].status")
+            --query="serviceDeployments[0].status") \
+            --output text
           echo "Final deployment status: $FINAL_STATUS"
           if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
               echo "Deployment failed or rolled back. Failing the job."
