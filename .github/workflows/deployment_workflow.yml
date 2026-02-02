@@ -228,7 +228,7 @@ jobs:
       - name: Fetch ECS lambda logs
         run: |
           mkdir -p lambda-logs
-          
+
           TEST_LOG_STREAM=$(aws logs describe-log-streams \
             --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
             --order-by "LastEventTime" \
@@ -236,12 +236,17 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text)
-          echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM"
-          aws logs get-log-events \
-            --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
-            --log-stream-name "$TEST_LOG_STREAM" | tee lambda-logs/test-transfer-log-events.json
-          echo "::endgroup::"
-          
+
+          if [ "$TEST_LOG_STREAM" != "None" ] && [ -n "$TEST_LOG_STREAM" ]; then
+            echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM"
+            aws logs get-log-events \
+              --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
+              --log-stream-name "$TEST_LOG_STREAM" | tee lambda-logs/test-transfer-log-events.json
+            echo "::endgroup::"
+          else
+            echo "No test transfer logs found"
+          fi
+
           PRODUCTION_LOG_STREAM=$(aws logs describe-log-streams \
             --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostProductionTransfer" \
             --order-by "LastEventTime" \
@@ -249,11 +254,16 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text)
-          echo "::group::Lambda Log Events: Production Transfer. Log Stream: $PRODUCTION_LOG_STREAM"
-          aws logs get-log-events \
-            --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
-            --log-stream-name "$PRODUCTION_LOG_STREAM" | tee lambda-logs/production-transfer-log-events.json
-          echo "::endgroup::"
+
+          if [ "$PRODUCTION_LOG_STREAM" != "None" ] && [ -n "$PRODUCTION_LOG_STREAM" ]; then
+            echo "::group::Lambda Log Events: Production Transfer. Log Stream: $PRODUCTION_LOG_STREAM"
+            aws logs get-log-events \
+              --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostProductionTransfer" \
+              --log-stream-name "$PRODUCTION_LOG_STREAM" | tee lambda-logs/production-transfer-log-events.json
+            echo "::endgroup::"
+          else
+            echo "No production transfer logs found"
+          fi
 
       - name: Upload ECS lambda logs
         uses: actions/upload-artifact@v4
