@@ -186,6 +186,8 @@ jobs:
     name: Deploy to ECS
     runs-on: ubuntu-latest
     environment: production
+    env: 
+      ACTIONS_STEP_DEBUG: true
     needs: upload-image
     permissions:
       id-token: write
@@ -224,11 +226,33 @@ jobs:
               --cluster ${{ vars.ECS_CLUSTER }} \
               --services ${{ vars.ECS_SERVICE }}
           echo "ECS service is stable now."
-  log:
+          
+      - name: Check deployment status. Fail if rollback
+        run: |
+          FINAL_STATUS=$(aws ecs list-service-deployments \
+            --service ${{ vars.ECS_SERVICE }} \
+            --cluster ${{ vars.ECS_CLUSTER }} \
+            --max-results=1 \
+            --query="serviceDeployments[0].status" \
+            --output text)
+
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to fetch deployment status from AWS."
+            exit 1
+          fi
+
+          echo "Final deployment status: $FINAL_STATUS"
+          if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
+              echo "Deployment failed or rolled back. Failing the job."
+              exit 1
+          fi
+
+  log-deployment:
     name: Upload Deployment Logs
     runs-on: ubuntu-latest
     environment: production
     needs: deploy
+    if: always()
     
     permissions:
       id-token: write
@@ -252,7 +276,7 @@ jobs:
             --cluster ${{ vars.ECS_CLUSTER }} \
             --max-results=1 \
             --query="serviceDeployments[0].serviceDeploymentArn" \
-            --output text)
+            --output text
           )
           echo "DEBUG: SERVICE_DEPLOYMENT_ARN value: '$SERVICE_DEPLOYMENT_ARN'"
           aws ecs describe-service-deployments \
@@ -319,25 +343,5 @@ jobs:
           name: lambda-log-streams
           path: lambda-logs/
           retention-days: 7
-
-      - name: Check deployment status. Fail if rollback
-        run: |
-          FINAL_STATUS=$(aws ecs list-service-deployments \
-            --service ${{ vars.ECS_SERVICE }} \
-            --cluster ${{ vars.ECS_CLUSTER }} \
-            --max-results=1 \
-            --query="serviceDeployments[0].status" \
-            --output text)
-
-          if [ $? -ne 0 ]; then
-            echo "Error: Failed to fetch deployment status from AWS."
-            exit 1
-          fi
-
-          echo "Final deployment status: $FINAL_STATUS"
-          if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
-              echo "Deployment failed or rolled back. Failing the job."
-              exit 1
-          fi
           
           
