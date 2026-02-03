@@ -239,13 +239,14 @@ jobs:
           
           echo "DEBUG: TEST_LOG_STREAM value: '$TEST_LOG_STREAM'"
           echo "DEBUG: TEST_LOG_STREAM length: ${#TEST_LOG_STREAM}"
+          TEST_LOG_STREAM_NAME=${TEST_LOG_STREAM%% *}
       
-          if [ "$TEST_LOG_STREAM" != "None" ] && [ -n "$TEST_LOG_STREAM" ]; then
-            echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM"
+          if [ "$TEST_LOG_STREAM_NAME" != "None" ] && [ -n "$TEST_LOG_STREAM_NAME" ]; then
+            echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM_NAME"
             set -x  # Show exact command being run
             aws logs get-log-events \
               --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostTestTransfer" \
-              --log-stream-name "$TEST_LOG_STREAM" | tee lambda-logs/test-transfer-log-events.json
+              --log-stream-name "$TEST_LOG_STREAM_NAME" | tee lambda-logs/test-transfer-log-events.json
             set +x
             echo "::endgroup::"
           else
@@ -259,12 +260,14 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text | xargs)
+          
+          PRODUCTION_LOG_STREAM_NAME=${PRODUCTION_LOG_STREAM%% *}
 
-          if [ "$PRODUCTION_LOG_STREAM" != "None" ] && [ -n "$PRODUCTION_LOG_STREAM" ]; then
-            echo "::group::Lambda Log Events: Production Transfer. Log Stream: $PRODUCTION_LOG_STREAM"
+          if [ "$PRODUCTION_LOG_STREAM_NAME" != "None" ] && [ -n "$PRODUCTION_LOG_STREAM_NAME" ]; then
+            echo "::group::Lambda Log Events: Production Transfer. Log Stream: $PRODUCTION_LOG_STREAM_NAME"
             aws logs get-log-events \
               --log-group-name "/aws/lambda/Invoicer-ECS-HandlePostProductionTransfer" \
-              --log-stream-name "$PRODUCTION_LOG_STREAM" | tee lambda-logs/production-transfer-log-events.json
+              --log-stream-name "$PRODUCTION_LOG_STREAM_NAME" | tee lambda-logs/production-transfer-log-events.json
             echo "::endgroup::"
           else
             echo "No production transfer logs found"
