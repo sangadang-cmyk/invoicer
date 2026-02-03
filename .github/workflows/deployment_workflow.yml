@@ -345,6 +345,7 @@ jobs:
     name: Workflow Cancellation Handler
     runs-on: ubuntu-latest
     environment: production
+    needs: deploy
     if: always() && (cancelled() || needs.deploy.result == 'cancelled')
     permissions:
       id-token: write
