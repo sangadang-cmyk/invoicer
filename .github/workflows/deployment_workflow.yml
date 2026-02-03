@@ -224,7 +224,47 @@ jobs:
               --cluster ${{ vars.ECS_CLUSTER }} \
               --services ${{ vars.ECS_SERVICE }}
           echo "ECS service is stable now."
+  log:
+    name: Upload Deployment Logs
+    runs-on: ubuntu-latest
+    environment: production
+    needs: deploy
+    
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+          
+      - name: Fetch ECS logs
+        run: |
+          mkdir -p ecs-logs
+          SERVICE_DEPLOYMENT_ARN=$(aws ecs list-service-deployments \
+            --service ${{ vars.ECS_SERVICE }} \
+            --cluster ${{ vars.ECS_CLUSTER }} \
+            --max-results=1 \
+            --query="serviceDeployments[0].serviceDeploymentArn" \
+            --output text)
+          )
+          echo "DEBUG: SERVICE_DEPLOYMENT_ARN value: '$SERVICE_DEPLOYMENT_ARN'"
+          aws ecs describe-service-deployments \
+            --service-deployment-arns $SERVICE_DEPLOYMENT_ARN | tee ecs-logs/deployment-description.json
+      
+      - name: Upload ECS logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecs-deployment-logs
+          path: ecs-logs/
+          retention-days: 7
+      
       - name: Fetch ECS lambda logs
         run: |
           mkdir -p lambda-logs
@@ -236,11 +276,11 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text | xargs)
-          
+
           echo "DEBUG: TEST_LOG_STREAM value: '$TEST_LOG_STREAM'"
           echo "DEBUG: TEST_LOG_STREAM length: ${#TEST_LOG_STREAM}"
           TEST_LOG_STREAM_NAME=${TEST_LOG_STREAM%% *}
-      
+
           if [ "$TEST_LOG_STREAM_NAME" != "None" ] && [ -n "$TEST_LOG_STREAM_NAME" ]; then
             echo "::group::Lambda Log Events: Test Transfer. Log Stream: $TEST_LOG_STREAM_NAME"
             set -x  # Show exact command being run
@@ -260,7 +300,7 @@ jobs:
             --max-items 1 \
             --query="logStreams[0].logStreamName" \
             --output text | xargs)
-          
+
           PRODUCTION_LOG_STREAM_NAME=${PRODUCTION_LOG_STREAM%% *}
 
           if [ "$PRODUCTION_LOG_STREAM_NAME" != "None" ] && [ -n "$PRODUCTION_LOG_STREAM_NAME" ]; then
@@ -288,12 +328,12 @@ jobs:
             --max-results=1 \
             --query="serviceDeployments[0].status" \
             --output text)
-          
+
           if [ $? -ne 0 ]; then
             echo "Error: Failed to fetch deployment status from AWS."
             exit 1
           fi
-          
+
           echo "Final deployment status: $FINAL_STATUS"
           if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
               echo "Deployment failed or rolled back. Failing the job."
