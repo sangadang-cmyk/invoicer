@@ -186,7 +186,7 @@ jobs:
     name: Deploy to ECS
     runs-on: ubuntu-latest
     environment: production
-    env: 
+    env:
       ACTIONS_STEP_DEBUG: true
     needs: upload-image
     permissions:
@@ -226,7 +226,7 @@ jobs:
               --cluster ${{ vars.ECS_CLUSTER }} \
               --services ${{ vars.ECS_SERVICE }}
           echo "ECS service is stable now."
-          
+
       - name: Check deployment status. Fail if rollback
         run: |
           FINAL_STATUS=$(aws ecs list-service-deployments \
@@ -245,7 +245,7 @@ jobs:
           if [ "$FINAL_STATUS" != "SUCCESSFUL" ]; then
               echo "Deployment failed or rolled back. Failing the job."
               exit 1
-          fi
+          fi        
 
   log-deployment:
     name: Upload Deployment Logs
@@ -259,15 +259,12 @@ jobs:
       contents: read
     
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
-          
+
       - name: Fetch ECS logs
         run: |
           mkdir -p ecs-logs
@@ -281,14 +278,14 @@ jobs:
           echo "DEBUG: SERVICE_DEPLOYMENT_ARN value: '$SERVICE_DEPLOYMENT_ARN'"
           aws ecs describe-service-deployments \
             --service-deployment-arns $SERVICE_DEPLOYMENT_ARN | tee ecs-logs/deployment-description.json
-      
+
       - name: Upload ECS logs
         uses: actions/upload-artifact@v4
         with:
           name: ecs-deployment-logs
           path: ecs-logs/
           retention-days: 7
-      
+
       - name: Fetch ECS lambda logs
         run: |
           mkdir -p lambda-logs
@@ -343,5 +340,74 @@ jobs:
           name: lambda-log-streams
           path: lambda-logs/
           retention-days: 7
+  
+  handle-cancel-workflow:
+    name: Workflow Cancellation Handler
+    runs-on: ubuntu-latest
+    environment: production
+    if: cancelled()
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Rollback ECS Service to previous deployment
+        run: |
+          echo "Workflow was cancelled. Initiating rollback to previous ECS deployment..."
+          SERVICE_DEPLOYMENT_JSON=$(aws ecs list-service-deployments \
+              --service ${{ vars.ECS_SERVICE }} \
+              --cluster ${{ vars.ECS_CLUSTER }} \
+              --max-results 1 \
+              --query="serviceDeployments[0]" \
+              --output json
+          )
+          DEPLOYMENT_STATUS=$(echo $SERVICE_DEPLOYMENT_JSON | jq -r '.status')
+          DEPLOYMENT_ARN=$(echo $SERVICE_DEPLOYMENT_JSON | jq -r '.serviceDeploymentArn')
           
+          ROLLBACK_STATUSES=("PENDING" "IN_PROGRESS" "STOP_REQUESTED" "ROLLBACK_IN_PROGRESS" "ROLLBACK_REQUESTED")
           
+          echo "Current deployment status: $DEPLOYMENT_STATUS"
+          echo "Current Deployment ARN: $DEPLOYMENT_ARN"
+          
+          if [[ ! " ${ROLLBACK_STATUSES[*]} " =~ " $DEPLOYMENT_STATUS " ]]; then
+              echo "The current deployment is SUCCESSFUL. No rollback possible."
+              exit 0
+          fi
+          
+          aws ecs stop-service-deployment \
+            --service-deployment-arn "$DEPLOYMENT_ARN" \
+            --stop-type "ROLLBACK"
+          
+      - name: Wait for service stability
+        run: |
+          echo "Waiting for ECS service to stabilize..."
+          aws ecs wait services-stable \
+              --cluster ${{ vars.ECS_CLUSTER }} \
+              --services ${{ vars.ECS_SERVICE }}
+          echo "ECS service is stable now."
+
+      - name: Check deployment status for ROLLBACK_SUCCESSFUL
+        run: |
+          FINAL_STATUS=$(aws ecs list-service-deployments \
+            --service ${{ vars.ECS_SERVICE }} \
+            --cluster ${{ vars.ECS_CLUSTER }} \
+            --max-results=1 \
+            --query="serviceDeployments[0].status" \
+            --output text)
+
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to fetch deployment status from AWS."
+            exit 1
+          fi
+
+          echo "Final deployment status: $FINAL_STATUS"
+          if [ "$FINAL_STATUS" != "ROLLBACK_SUCCESSFUL" ]; then
+              echo "Rollback failed. Failing the job."
+              exit 1
+          fi 
