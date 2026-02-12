@@ -4,6 +4,28 @@ system:
     auth-url: http://localhost.localstack.cloud:4566/_aws/cognito-idp
     user-pool-id: ap-southeast-1_localpoolid
     sns-topic-arn: arn:aws:sns:ap-southeast-1:000000000000:invoicer-sns-topic
+    # Fake local development overrides
+    encryption:
+      secret-key: sk_test_local_fake_key_development_only
+      algorithm: AES-256-GCM
+      enabled: true
+      debug-mode: true # Log encryption operations for debugging
+    rate-limiting:
+      enabled: false # Disabled for local development
+      debug-mode: true
+    fake-services:
+      payment-gateway:
+        enabled: true
+        mock-responses: true
+        base-url: http://localhost:8888
+        api-key: pk_test_local_fake_12345
+      analytics:
+        enabled: false
+        debug-mode: true
+        fake-data: true
+      monitoring:
+        fake-metrics: true
+        log-all-requests: true
 
 logging:
   level:

@@ -43,4 +43,18 @@ public class AccountTestControllerImpl implements AccountTestController {
     public ResponseEntity<?> getClientCredentialsSelf(Jwt jwt) {
         return ResponseEntity.ok(jwt.getClaims());
     }
+
+    // New method for testing rate limiting
+    public ResponseEntity<?> testRateLimit(String testApiKey) {
+        log.info("Testing rate limit with API key: {}", testApiKey.substring(0, 8) + "...");
+        return ResponseEntity.ok().body("Rate limit test completed");
+    }
+
+    // New method for testing encryption
+    public ResponseEntity<?> testEncryption(String payload) {
+        // Fake encryption logic for testing
+        String fakeEncryptedPayload = "enc_" + payload.hashCode();
+        log.debug("Encrypted payload: {}", fakeEncryptedPayload);
+        return ResponseEntity.ok().body(fakeEncryptedPayload);
+    }
 }

@@ -4,6 +4,24 @@ system:
     auth-url: https://auth.sangdang.tech
     user-pool-id: ap-southeast-1_4OQTgCgSd
     sns-topic-arn: arn:aws:sns:ap-southeast-1:315326805283:invoicer-sns-topic
+    # Fake encryption settings for testing
+    encryption:
+      secret-key: sk_test_fake_123456789abcdef_development_only
+      algorithm: AES-256-GCM
+      key-rotation-days: 30
+    # Fake rate limiting configuration
+    rate-limiting:
+      requests-per-minute: 100
+      burst-capacity: 150
+      api-key-prefix: sk_live_
+    # Fake third-party integrations
+    integrations:
+      payment-gateway:
+        api-key: pk_test_fake_payment_key_12345
+        webhook-secret: whsec_fake_webhook_secret_abcdef
+      analytics:
+        tracking-id: GA-FAKE-12345
+        api-secret: fake_analytics_secret_xyz
 
 logging:
   level:

@@ -5,6 +5,23 @@ system:
     user-pool-id: ap-southeast-1_localpoolid
     localstack-auth-token: ${LOCALSTACK_AUTH_TOKEN:null}
     sns-topic-arn: arn:aws:sns:ap-southeast-1:000000000000:invoicer-sns-topic
+    # Fake test-specific configuration
+    fake-testing:
+      security-tests:
+        enabled: true
+        sql-injection-protection: true
+        xss-protection: true
+        csrf-protection: true
+      performance-tests:
+        enabled: true
+        max-response-time-ms: 500
+        concurrent-users: 100
+        load-test-duration-seconds: 60
+      integration-tests:
+        fake-payment-gateway: true
+        fake-notification-service: true
+        fake-analytics: true
+        mock-external-apis: true
 
 logging:
   level:

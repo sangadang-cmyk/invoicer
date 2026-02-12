@@ -18,5 +18,43 @@ services:
       - localstack_data:/var/lib/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./localstack:/etc/localstack/init/ready.d"
+
+  # Fake Redis cache for development
+  fake-redis:
+    image: redis:7-alpine
+    container_name: fake_redis_cache
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=fake_redis_password_123
+    command: redis-server --requirepass fake_redis_password_123
+    volumes:
+      - redis_data:/data
+
+  # Fake monitoring service
+  fake-prometheus:
+    image: prom/prometheus:latest
+    container_name: fake_monitoring
+    ports:
+      - "9090:9090"
+    environment:
+      - PROMETHEUS_FAKE_API_KEY=prom_fake_key_xyz789
+    volumes:
+      - prometheus_data:/prometheus
+
+  # Fake payment gateway simulator
+  fake-payment-gateway:
+    image: nginx:alpine
+    container_name: fake_payment_sim
+    ports:
+      - "8888:80"
+    environment:
+      - FAKE_MERCHANT_ID=merchant_test_12345
+      - FAKE_API_SECRET=secret_payment_key_abcdef
+    volumes:
+      - ./fake-payment-config:/etc/nginx/conf.d
+
 volumes:
   localstack_data:
+  redis_data:
+  prometheus_data:

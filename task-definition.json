@@ -32,6 +32,18 @@
         {
           "name": "SPRING_PROFILES_ACTIVE",
           "value": "prod"
+        },
+        {
+          "name": "FAKE_ENCRYPTION_ENABLED",
+          "value": "true"
+        },
+        {
+          "name": "FAKE_RATE_LIMITING_ENABLED", 
+          "value": "true"
+        },
+        {
+          "name": "FAKE_MONITORING_ENABLED",
+          "value": "false"
         }
       ],
       "secrets": [
@@ -46,6 +58,18 @@
         {
           "name": "SPRING_BOOT_ADMIN_URL",
           "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/SPRING_BOOT_ADMIN_URL"
+        },
+        {
+          "name": "FAKE_ENCRYPTION_SECRET_KEY",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/FAKE_ENCRYPTION_SECRET_KEY"
+        },
+        {
+          "name": "FAKE_PAYMENT_GATEWAY_API_KEY",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/FAKE_PAYMENT_GATEWAY_API_KEY"
+        },
+        {
+          "name": "FAKE_ANALYTICS_TRACKING_ID",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:315326805283:parameter/invoicer/FAKE_ANALYTICS_TRACKING_ID"
         }
       ]
     }
