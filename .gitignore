@@ -40,3 +40,6 @@ build/
 /volume
 
 /**/*.patch
+/temp/*
+commit_times.csv
+run-test.bat
